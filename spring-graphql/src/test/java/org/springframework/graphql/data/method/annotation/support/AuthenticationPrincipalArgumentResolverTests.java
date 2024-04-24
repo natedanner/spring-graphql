@@ -285,7 +285,7 @@ class AuthenticationPrincipalArgumentResolverTests {
 	}
 
 	private static Function<Context, Context> authenticationContext() {
-		return (context) -> ReactiveSecurityContextHolder.withAuthentication(usernamePasswordAuthentication());
+		return context -> ReactiveSecurityContextHolder.withAuthentication(usernamePasswordAuthentication());
 	}
 
 	private static Authentication usernamePasswordAuthentication() {

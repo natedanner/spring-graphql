@@ -60,7 +60,7 @@ public class DefaultExecutionRequestObservationConvention implements ExecutionRe
 
 	@Override
 	public String getContextualName(ExecutionRequestObservationContext context) {
-		String operationName = (context.getExecutionInput().getOperationName() != null) ? context.getExecutionInput().getOperationName() : "query";
+		String operationName = context.getExecutionInput().getOperationName() != null ? context.getExecutionInput().getOperationName() : "query";
 		return BASE_CONTEXTUAL_NAME + operationName;
 	}
 
@@ -73,7 +73,7 @@ public class DefaultExecutionRequestObservationConvention implements ExecutionRe
 		if (context.getError() != null || context.getExecutionResult() == null) {
 			return OUTCOME_INTERNAL_ERROR;
 		}
-		else if (context.getExecutionResult().getErrors().size() > 0) {
+		else if (!context.getExecutionResult().getErrors().isEmpty()) {
 			return OUTCOME_REQUEST_ERROR;
 		}
 		return OUTCOME_SUCCESS;

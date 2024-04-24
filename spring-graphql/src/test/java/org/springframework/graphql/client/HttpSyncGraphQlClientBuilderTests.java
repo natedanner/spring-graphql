@@ -140,7 +140,7 @@ public class HttpSyncGraphQlClientBuilderTests {
 	@Test
 	void mutateDocumentSource() {
 
-		DocumentSource documentSource = name -> name.equals("name") ?
+		DocumentSource documentSource = name -> "name".equals(name) ?
 				Mono.just(DOCUMENT) : Mono.error(new IllegalArgumentException());
 
 		// Original
@@ -287,7 +287,7 @@ public class HttpSyncGraphQlClientBuilderTests {
 						.toEntity(byte[].class)
 						.block();
 
-				byte[] body = (entity.getBody() != null ? entity.getBody() : new byte[0]);
+				byte[] body = entity.getBody() != null ? entity.getBody() : new byte[0];
 				MockClientHttpResponse response = new MockClientHttpResponse(body, entity.getStatusCode());
 				response.getHeaders().putAll(entity.getHeaders());
 				return response;

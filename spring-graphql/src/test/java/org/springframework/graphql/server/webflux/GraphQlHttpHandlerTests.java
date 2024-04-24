@@ -63,7 +63,7 @@ public class GraphQlHttpHandlerTests {
 
 	private final GraphQlHttpHandler greetingHandler =
 			GraphQlSetup.schemaContent("type Query { greeting: String }")
-					.queryFetcher("greeting", (env) -> "Hello")
+					.queryFetcher("greeting", env -> "Hello")
 					.toHttpHandlerWebFlux();
 
 
@@ -126,7 +126,7 @@ public class GraphQlHttpHandlerTests {
 	@Test
 	void locale() throws Exception {
 		GraphQlHttpHandler handler = GraphQlSetup.schemaContent("type Query { greeting: String }")
-				.queryFetcher("greeting", (env) -> "Hello in " + env.getLocale())
+				.queryFetcher("greeting", env -> "Hello in " + env.getLocale())
 				.toHttpHandlerWebFlux();
 
 		MockServerHttpRequest httpRequest = MockServerHttpRequest.post("/")
@@ -144,7 +144,7 @@ public class GraphQlHttpHandlerTests {
 	@Test
 	void shouldSetExecutionId() throws Exception {
 		GraphQlHttpHandler handler = GraphQlSetup.schemaContent("type Query { showId: String }")
-				.queryFetcher("showId", (env) -> env.getExecutionId().toString())
+				.queryFetcher("showId", env -> env.getExecutionId().toString())
 				.toHttpHandlerWebFlux();
 
 		MockServerHttpRequest httpRequest = MockServerHttpRequest.post("/")
@@ -162,7 +162,7 @@ public class GraphQlHttpHandlerTests {
 	@Test
 	void shouldUseCustomCodec() {
 		WebGraphQlHandler webGraphQlHandler = GraphQlSetup.schemaContent("type Query { showId: String }")
-				.queryFetcher("showId", (env) -> env.getExecutionId().toString())
+				.queryFetcher("showId", env -> env.getExecutionId().toString())
 				.toWebGraphQlHandler();
 
 		ObjectMapper mapper = new ObjectMapper();

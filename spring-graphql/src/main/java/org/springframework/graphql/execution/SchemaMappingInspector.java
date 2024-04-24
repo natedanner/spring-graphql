@@ -239,7 +239,7 @@ public final class SchemaMappingInspector {
 	private PropertyDescriptor getProperty(ResolvableType resolvableType, String fieldName) {
 		try {
 			Class<?> clazz = resolvableType.resolve();
-			return (clazz != null) ? BeanUtils.getPropertyDescriptor(clazz, fieldName) : null;
+			return clazz != null ? BeanUtils.getPropertyDescriptor(clazz, fieldName) : null;
 		}
 		catch (BeansException ex) {
 			throw new IllegalStateException(
@@ -248,7 +248,7 @@ public final class SchemaMappingInspector {
 	}
 
 	private boolean addAndCheckIfAlreadyInspected(GraphQLType type) {
-		return (type instanceof GraphQLNamedOutputType outputType && !this.inspectedTypes.add(outputType.getName()));
+		return type instanceof GraphQLNamedOutputType outputType && !this.inspectedTypes.add(outputType.getName());
 	}
 
 	private static boolean isNotScalarOrEnumType(GraphQLType type) {
@@ -264,7 +264,7 @@ public final class SchemaMappingInspector {
 	}
 
 	private static String typeNameToString(GraphQLType type) {
-		return (type instanceof GraphQLNamedType namedType) ? namedType.getName() : type.toString();
+		return type instanceof GraphQLNamedType namedType ? namedType.getName() : type.toString();
 	}
 
 	private void checkDataFetcherRegistrations() {
@@ -467,7 +467,7 @@ public final class SchemaMappingInspector {
 	 */
 	private static class InterfaceUnionLookup {
 
-		private static final Predicate<String> PACKAGE_PREDICATE = (name) -> !name.startsWith("java.");
+		private static final Predicate<String> PACKAGE_PREDICATE = name -> !name.startsWith("java.");
 
 		private static final LinkedMultiValueMap<GraphQLType, ResolvableType> EMPTY_MULTI_VALUE_MAP = new LinkedMultiValueMap<>(0);
 
@@ -550,7 +550,7 @@ public final class SchemaMappingInspector {
 
 			for (ResolvableType resolvableType : resolvableTypes) {
 				String name = interfaceOrUnionType.getName();
-				this.mappings.computeIfAbsent(name, (n) -> new LinkedMultiValueMap<>()).add(objectType, resolvableType);
+				this.mappings.computeIfAbsent(name, n -> new LinkedMultiValueMap<>()).add(objectType, resolvableType);
 			}
 		}
 
@@ -598,7 +598,7 @@ public final class SchemaMappingInspector {
 				GraphQLType parent, GraphQLFieldDefinition field, DataFetcher<?> fetcher, GraphQLSchema schema) {
 
 			return resolveTypePair(parent, field,
-					(fetcher instanceof SelfDescribingDataFetcher<?> sd) ? sd.getReturnType() : ResolvableType.NONE,
+					fetcher instanceof SelfDescribingDataFetcher<?> sd ? sd.getReturnType() : ResolvableType.NONE,
 					schema);
 		}
 
@@ -633,13 +633,13 @@ public final class SchemaMappingInspector {
 		}
 
 		private static GraphQLType unwrapIfNonNull(GraphQLType type) {
-			return (type instanceof GraphQLNonNull graphQLNonNull) ? graphQLNonNull.getWrappedType() : type;
+			return type instanceof GraphQLNonNull graphQLNonNull ? graphQLNonNull.getWrappedType() : type;
 		}
 
 		private static boolean isPaginatedType(GraphQLType type) {
-			return (type instanceof GraphQLObjectType objectType &&
+			return type instanceof GraphQLObjectType objectType &&
 					objectType.getName().endsWith("Connection") &&
-					objectType.getField("edges") != null && objectType.getField("pageInfo") != null);
+					objectType.getField("edges") != null && objectType.getField("pageInfo") != null;
 		}
 
 		private static GraphQLType getPaginatedType(GraphQLObjectType type, GraphQLSchema schema) {
@@ -805,8 +805,8 @@ public final class SchemaMappingInspector {
 
 		private String formatUnmappedFields() {
 			MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
-			this.unmappedFields.forEach((coordinates) -> {
-				List<String> fields = map.computeIfAbsent(coordinates.getTypeName(), (s) -> new ArrayList<>());
+			this.unmappedFields.forEach(coordinates -> {
+				List<String> fields = map.computeIfAbsent(coordinates.getTypeName(), s -> new ArrayList<>());
 				fields.add(coordinates.getFieldName());
 			});
 			return map.toString();

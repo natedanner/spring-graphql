@@ -105,15 +105,15 @@ final class EntitiesDataFetcher implements DataFetcher<Mono<DataFetcherResult<Li
 
 		return handlerMethod.getEntity(env, map)
 				.switchIfEmpty(Mono.error(new RepresentationNotResolvedException(map, handlerMethod)))
-				.onErrorResume((ex) -> resolveException(ex, env, handlerMethod, index));
+				.onErrorResume(ex -> resolveException(ex, env, handlerMethod, index));
 	}
 
 	private Mono<Object> resolveException(
 			Throwable ex, DataFetchingEnvironment env, @Nullable EntityHandlerMethod handlerMethod, int index) {
 
-		Throwable theEx = (ex instanceof CompletionException) ? ex.getCause() : ex;
+		Throwable theEx = ex instanceof CompletionException ? ex.getCause() : ex;
 		DataFetchingEnvironment theEnv = new IndexedDataFetchingEnvironment(env, index);
-		Object handler = (handlerMethod != null) ? handlerMethod.getBean() : null;
+		Object handler = handlerMethod != null ? handlerMethod.getBean() : null;
 
 		return this.exceptionResolver.resolveException(theEx, theEnv, handler)
 				.map(ErrorContainer::new)
@@ -123,7 +123,7 @@ final class EntitiesDataFetcher implements DataFetcher<Mono<DataFetcherResult<Li
 
 	private ErrorContainer createDefaultError(Throwable ex, DataFetchingEnvironment env) {
 
-		ErrorType errorType = (ex instanceof RepresentationException representationEx) ?
+		ErrorType errorType = ex instanceof RepresentationException representationEx ?
 				representationEx.getErrorType() : ErrorType.INTERNAL_ERROR;
 
 		return new ErrorContainer(GraphqlErrorBuilder.newError(env)
@@ -176,10 +176,10 @@ final class EntitiesDataFetcher implements DataFetcher<Mono<DataFetcherResult<Li
 
 		Mono<Object> invokeEntityBatchMethod() {
 			return this.handlerMethod.getEntities(this.environment, this.representations)
-					.mapNotNull((result) -> (((List<?>) result).isEmpty()) ? null : result)
+					.mapNotNull(result -> ((List<?>) result).isEmpty() ? null : result)
 					.switchIfEmpty(Mono.defer(this::handleEmptyResult))
 					.onErrorResume(this::handleErrorResult)
-					.map((result) -> {
+					.map(result -> {
 						this.resultList = (List<?>) result;
 						return this;
 					});

@@ -58,10 +58,10 @@ public final class WindowConnectionAdapter
 		if (!window.isEmpty()) {
 			ScrollPosition position = window.positionAt(0);
 			if (position instanceof KeysetScrollPosition keysetPosition) {
-				return (keysetPosition.scrollsBackward() && window.hasNext());
+				return keysetPosition.scrollsBackward() && window.hasNext();
 			}
 			else if (position instanceof OffsetScrollPosition offsetPosition) {
-				return (offsetPosition.getOffset() != 0);
+				return offsetPosition.getOffset() != 0;
 			}
 			else {
 				return !position.isInitial();
@@ -76,7 +76,7 @@ public final class WindowConnectionAdapter
 		if (!window.isEmpty()) {
 			ScrollPosition pos = window.positionAt(0);
 			if (pos instanceof KeysetScrollPosition keysetPos) {
-				return (keysetPos.scrollsForward() && window.hasNext());
+				return keysetPos.scrollsForward() && window.hasNext();
 			}
 			else {
 				return window.hasNext();

@@ -64,7 +64,7 @@ final class HttpMessageConverterDelegate {
 	@SuppressWarnings("unchecked")
 	static HttpMessageConverter<Object> findJsonConverter(List<HttpMessageConverter<?>> converters) {
 		return (HttpMessageConverter<Object>) converters.stream()
-				.filter((converter) -> converter.canRead(Map.class, MediaType.APPLICATION_JSON))
+				.filter(converter -> converter.canRead(Map.class, MediaType.APPLICATION_JSON))
 				.findFirst()
 				.orElseThrow(() -> new IllegalArgumentException("No JSON HttpMessageConverter"));
 	}
@@ -82,7 +82,7 @@ final class HttpMessageConverterDelegate {
 		if (mimeType instanceof MediaType mediaType) {
 			return mediaType;
 		}
-		return (mimeType != null) ? new MediaType(mimeType) : null;
+		return mimeType != null ? new MediaType(mimeType) : null;
 	}
 
 

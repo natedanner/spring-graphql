@@ -133,9 +133,9 @@ final class DefaultRSocketGraphQlClientBuilder
 	public RSocketGraphQlClient build() {
 
 		// Pass the codecs to the parent for response decoding
-		this.requesterBuilder.rsocketStrategies((builder) -> {
-			builder.decoders((decoders) -> setJsonDecoder(CodecDelegate.findJsonDecoder(decoders)));
-			builder.encoders((encoders) -> setJsonEncoder(CodecDelegate.findJsonEncoder(encoders)));
+		this.requesterBuilder.rsocketStrategies(builder -> {
+			builder.decoders(decoders -> setJsonDecoder(CodecDelegate.findJsonDecoder(decoders)));
+			builder.encoders(encoders -> setJsonEncoder(CodecDelegate.findJsonEncoder(encoders)));
 		});
 
 		RSocketRequester requester;

@@ -92,8 +92,8 @@ final class DefaultHttpGraphQlTesterBuilder
 	}
 
 	private void registerJsonPathMappingProvider() {
-		this.webTestClientBuilder.codecs((codecConfigurer) ->
-				configureJsonPathConfig((config) -> {
+		this.webTestClientBuilder.codecs(codecConfigurer ->
+				configureJsonPathConfig(config -> {
 					EncoderDecoderMappingProvider provider = new EncoderDecoderMappingProvider(codecConfigurer);
 					return config.mappingProvider(provider);
 				}));

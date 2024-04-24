@@ -105,7 +105,7 @@ public class ProjectedPayloadMethodArgumentResolverTests extends ArgumentResolve
 				environment("{ \"where\" : null}"));
 
 		assertThat(result).isNotNull().isInstanceOf(ArgumentValue.class);
-		ArgumentValue<BookProjection> value = ((ArgumentValue<BookProjection>) result);
+		ArgumentValue<BookProjection> value = (ArgumentValue<BookProjection>) result;
 		assertThat(value.isPresent()).isFalse();
 		assertThat(value.isOmitted()).isFalse();
 	}
@@ -118,7 +118,7 @@ public class ProjectedPayloadMethodArgumentResolverTests extends ArgumentResolve
 				environment("{}"));
 
 		assertThat(result).isNotNull().isInstanceOf(ArgumentValue.class);
-		ArgumentValue<BookProjection> value = ((ArgumentValue<BookProjection>) result);
+		ArgumentValue<BookProjection> value = (ArgumentValue<BookProjection>) result;
 		assertThat(value.isPresent()).isFalse();
 		assertThat(value.isOmitted()).isTrue();
 	}

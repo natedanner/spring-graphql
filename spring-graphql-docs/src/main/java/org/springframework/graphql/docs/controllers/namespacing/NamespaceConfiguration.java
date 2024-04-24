@@ -31,9 +31,9 @@ public class NamespaceConfiguration {
 	public GraphQlSourceBuilderCustomizer customizer() {
 		List<String> queryWrappers = List.of("music", "users"); // <1>
 
-		return (sourceBuilder) -> sourceBuilder.configureRuntimeWiring((wiringBuilder) ->
-				queryWrappers.forEach((field) -> wiringBuilder.type("Query",
-						(builder) -> builder.dataFetcher(field, (env) -> Collections.emptyMap()))) // <2>
+		return sourceBuilder -> sourceBuilder.configureRuntimeWiring(wiringBuilder ->
+				queryWrappers.forEach(field -> wiringBuilder.type("Query",
+						builder -> builder.dataFetcher(field, env -> Collections.emptyMap()))) // <2>
 		);
 	}
 

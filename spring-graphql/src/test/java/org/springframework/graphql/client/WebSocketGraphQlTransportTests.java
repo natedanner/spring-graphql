@@ -370,7 +370,7 @@ public class WebSocketGraphQlTransportTests {
 	/**
 	 * Server handler that inserts a "ping" after the "connection_ack".
 	 */
-	private static class PingResponseHandler implements WebSocketHandler {
+	private static final class PingResponseHandler implements WebSocketHandler {
 
 		private final GraphQlResponse response;
 
@@ -417,9 +417,9 @@ public class WebSocketGraphQlTransportTests {
 				String id = inputMessage.getId();
 
 				GraphQlWebSocketMessage outputMessage =
-						(inputMessage.resolvedType() == GraphQlWebSocketMessageType.CONNECTION_INIT ?
+						inputMessage.resolvedType() == GraphQlWebSocketMessageType.CONNECTION_INIT ?
 								GraphQlWebSocketMessage.connectionAck(null) :
-								GraphQlWebSocketMessage.subscribe(id, new DefaultGraphQlRequest("")));
+								GraphQlWebSocketMessage.subscribe(id, new DefaultGraphQlRequest(""));
 
 				return Flux.just(this.codecDelegate.encode(session, outputMessage));
 			}));

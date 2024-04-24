@@ -55,7 +55,7 @@ class GraphQlSseHandlerTests {
 	private static final DataFetcher<?> BOOK_SEARCH = environment -> {
 		String author = environment.getArgument("author");
 		return Flux.fromIterable(BookSource.books())
-				.filter((book) -> book.getAuthor().getFullName().contains(author));
+				.filter(book -> book.getAuthor().getFullName().contains(author));
 	};
 
 	@Test
@@ -130,7 +130,7 @@ class GraphQlSseHandlerTests {
 
 	private GraphQlSseHandler createSseHandler(DataFetcher<?> subscriptionDataFetcher) {
 		return new GraphQlSseHandler(GraphQlSetup.schemaResource(BookSource.schema)
-				.queryFetcher("bookById", (env) -> BookSource.getBookWithoutAuthor(1L))
+				.queryFetcher("bookById", env -> BookSource.getBookWithoutAuthor(1L))
 				.subscriptionFetcher("bookSearch", subscriptionDataFetcher)
 				.toWebGraphQlHandler());
 	}

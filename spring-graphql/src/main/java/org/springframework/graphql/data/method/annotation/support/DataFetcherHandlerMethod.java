@@ -61,7 +61,7 @@ public class DataFetcherHandlerMethod extends DataFetcherHandlerMethodSupport {
 
 		super(handlerMethod, resolvers, executor);
 		Assert.isTrue(!resolvers.getResolvers().isEmpty(), "No argument resolvers");
-		this.validationHelper = (validationHelper != null) ? validationHelper : (controller, args) -> { };
+		this.validationHelper = validationHelper != null ? validationHelper : (controller, args) -> { };
 		this.subscription = subscription;
 	}
 
@@ -102,17 +102,17 @@ public class DataFetcherHandlerMethod extends DataFetcherHandlerMethodSupport {
 			return Mono.error(ex);
 		}
 
-		if (Arrays.stream(args).noneMatch((arg) -> arg instanceof Mono)) {
+		if (Arrays.stream(args).noneMatch(Mono.class::isInstance)) {
 			return validateAndInvoke(args, environment);
 		}
 
 		return this.subscription ?
-				toArgsMono(args).flatMapMany((argValues) -> {
+				toArgsMono(args).flatMapMany(argValues -> {
 					Object result = validateAndInvoke(argValues, environment);
 					Assert.state(result instanceof Publisher, "Expected a Publisher from a Subscription response");
 					return Flux.from((Publisher<?>) result);
 				}) :
-				toArgsMono(args).flatMap((argValues) -> {
+				toArgsMono(args).flatMap(argValues -> {
 					Object result = validateAndInvoke(argValues, environment);
 					if (result instanceof Mono<?> mono) {
 						return mono;

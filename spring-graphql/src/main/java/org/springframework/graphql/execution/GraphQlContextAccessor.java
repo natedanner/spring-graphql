@@ -40,7 +40,7 @@ public class GraphQlContextAccessor implements ContextAccessor<GraphQLContext, G
 
 	@Override
 	public void readValues(GraphQLContext context, Predicate<Object> keyPredicate, Map<Object, Object> readValues) {
-		context.stream().forEach((entry) -> {
+		context.stream().forEach(entry -> {
 			if (keyPredicate.test(entry.getKey())) {
 				readValues.put(entry.getKey(), entry.getValue());
 			}

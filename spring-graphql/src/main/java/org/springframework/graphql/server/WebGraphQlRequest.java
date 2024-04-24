@@ -189,7 +189,7 @@ public class WebGraphQlRequest extends DefaultExecutionGraphQlRequest implements
 
 		this.uri = UriComponentsBuilder.fromUri(uri).build(true);
 		this.headers = headers;
-		this.cookies = (cookies != null) ? CollectionUtils.unmodifiableMultiValueMap(cookies) : EMPTY_COOKIES;
+		this.cookies = cookies != null ? CollectionUtils.unmodifiableMultiValueMap(cookies) : EMPTY_COOKIES;
 		this.remoteAddress = remoteAddress;
 		this.attributes = Collections.unmodifiableMap(attributes);
 	}

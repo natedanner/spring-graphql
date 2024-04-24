@@ -63,7 +63,7 @@ public class ReactiveSecurityDataFetcherExceptionResolver implements DataFetcher
 		}
 		if (ex instanceof AccessDeniedException) {
 			return ReactiveSecurityContextHolder.getContext()
-					.map((context) -> Collections.singletonList(
+					.map(context -> Collections.singletonList(
 							SecurityExceptionResolverUtils.resolveAccessDenied(environment, this.trustResolver, context)))
 					.switchIfEmpty(Mono.fromCallable(() -> Collections.singletonList(
 							SecurityExceptionResolverUtils.resolveUnauthorized(environment))));

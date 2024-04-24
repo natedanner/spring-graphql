@@ -78,7 +78,7 @@ final class ContextDataFetcherDecorator implements DataFetcher<Object> {
 		GraphQLContext graphQlContext = env.getGraphQlContext();
 		ContextSnapshotFactory snapshotFactory = ContextSnapshotFactoryHelper.getInstance(graphQlContext);
 
-		ContextSnapshot snapshot = (env.getLocalContext() instanceof GraphQLContext localContext) ?
+		ContextSnapshot snapshot = env.getLocalContext() instanceof GraphQLContext localContext ?
 				snapshotFactory.captureFrom(graphQlContext, localContext) :
 				snapshotFactory.captureFrom(graphQlContext);
 
@@ -86,13 +86,13 @@ final class ContextDataFetcherDecorator implements DataFetcher<Object> {
 
 		if (this.subscription) {
 			Assert.state(value instanceof Publisher, "Expected Publisher for a subscription");
-			Flux<?> flux = Flux.from((Publisher<?>) value).onErrorResume((exception) -> {
+			Flux<?> flux = Flux.from((Publisher<?>) value).onErrorResume(exception -> {
 				// Already handled, e.g. controller methods?
 				if (exception instanceof SubscriptionPublisherException) {
 					return Mono.error(exception);
 				}
 				return this.subscriptionExceptionResolver.resolveException(exception)
-						.flatMap((errors) -> Mono.error(new SubscriptionPublisherException(errors, exception)));
+						.flatMap(errors -> Mono.error(new SubscriptionPublisherException(errors, exception)));
 			});
 			return flux.contextWrite(snapshot::updateContext);
 		}
@@ -153,8 +153,8 @@ final class ContextDataFetcherDecorator implements DataFetcher<Object> {
 			Class<?> type = dataFetcher.getClass();
 			String packageName = type.getPackage().getName();
 			if (packageName.startsWith("graphql.")) {
-				return (type.getSimpleName().startsWith("DataFetcherFactories") ||
-						packageName.startsWith("graphql.validation"));
+				return type.getSimpleName().startsWith("DataFetcherFactories") ||
+						packageName.startsWith("graphql.validation");
 			}
 			return true;
 		}

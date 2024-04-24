@@ -94,7 +94,7 @@ final class DefaultExecutionGraphQlServiceTesterBuilder
 
 	private void registerJsonPathMappingProvider() {
 		if (this.encoder != null && this.decoder != null) {
-			configureJsonPathConfig((config) -> {
+			configureJsonPathConfig(config -> {
 				EncoderDecoderMappingProvider provider = new EncoderDecoderMappingProvider(
 						Collections.singletonList(this.encoder), Collections.singletonList(this.decoder));
 				return config.mappingProvider(provider);

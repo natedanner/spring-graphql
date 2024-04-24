@@ -76,8 +76,8 @@ public class DefaultGraphQlRequest implements GraphQlRequest {
 		Assert.notNull(document, "'document' is required");
 		this.document = document;
 		this.operationName = operationName;
-		this.variables = (variables != null) ? variables : Collections.emptyMap();
-		this.extensions = (extensions != null) ? extensions : Collections.emptyMap();
+		this.variables = variables != null ? variables : Collections.emptyMap();
+		this.extensions = extensions != null ? extensions : Collections.emptyMap();
 	}
 
 
@@ -125,10 +125,10 @@ public class DefaultGraphQlRequest implements GraphQlRequest {
 			return false;
 		}
 		DefaultGraphQlRequest other = (DefaultGraphQlRequest) o;
-		return (getDocument().equals(other.getDocument()) &&
+		return getDocument().equals(other.getDocument()) &&
 				ObjectUtils.nullSafeEquals(getOperationName(), other.getOperationName()) &&
 				ObjectUtils.nullSafeEquals(getVariables(), other.getVariables()) &&
-				ObjectUtils.nullSafeEquals(getExtensions(), other.getExtensions()));
+				ObjectUtils.nullSafeEquals(getExtensions(), other.getExtensions());
 	}
 
 	@Override
@@ -142,9 +142,9 @@ public class DefaultGraphQlRequest implements GraphQlRequest {
 	@Override
 	public String toString() {
 		return "document='" + getDocument() + "'" +
-				((getOperationName() != null) ? ", operationName='" + getOperationName() + "'" : "") +
-				(!CollectionUtils.isEmpty(getVariables()) ? ", variables=" + getVariables() : "" +
-				(!CollectionUtils.isEmpty(getExtensions()) ? ", extensions=" + getExtensions() : ""));
+				(getOperationName() != null ? ", operationName='" + getOperationName() + "'" : "") +
+				(CollectionUtils.isEmpty(getVariables()) ? "" +
+				(CollectionUtils.isEmpty(getExtensions()) ? "" : ", extensions=" + getExtensions()) : ", variables=" + getVariables());
 	}
 
 }

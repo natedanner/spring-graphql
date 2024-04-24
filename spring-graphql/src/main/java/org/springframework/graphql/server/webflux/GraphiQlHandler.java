@@ -73,9 +73,9 @@ public class GraphiQlHandler {
 	 * @param request the HTTP server request
 	 */
 	public Mono<ServerResponse> handleRequest(ServerRequest request) {
-		return (request.queryParam("path").isPresent() ?
+		return request.queryParam("path").isPresent() ?
 				ServerResponse.ok().contentType(MediaType.TEXT_HTML).bodyValue(this.htmlResource) :
-				ServerResponse.temporaryRedirect(getRedirectUrl(request)).build());
+				ServerResponse.temporaryRedirect(getRedirectUrl(request)).build();
 	}
 
 	private URI getRedirectUrl(ServerRequest request) {

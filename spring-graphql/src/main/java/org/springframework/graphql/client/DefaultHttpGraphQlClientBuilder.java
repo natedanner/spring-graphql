@@ -104,7 +104,7 @@ final class DefaultHttpGraphQlClientBuilder
 	public HttpGraphQlClient build() {
 
 		// Pass the codecs to the parent for response decoding
-		this.webClientBuilder.codecs((configurer) ->
+		this.webClientBuilder.codecs(configurer ->
 				setJsonCodecs(
 						CodecDelegate.findJsonEncoder(configurer),
 						CodecDelegate.findJsonDecoder(configurer)));

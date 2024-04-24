@@ -47,8 +47,8 @@ public class SubrangeMethodArgumentResolver<P> implements HandlerMethodArgumentR
 
 	@Override
 	public boolean supportsParameter(MethodParameter parameter) {
-		return (parameter.getParameterType().equals(Subrange.class) &&
-				this.cursorStrategy.supports(parameter.nested().getNestedParameterType()));
+		return parameter.getParameterType().equals(Subrange.class) &&
+				this.cursorStrategy.supports(parameter.nested().getNestedParameterType());
 	}
 
 	@Override
@@ -63,7 +63,7 @@ public class SubrangeMethodArgumentResolver<P> implements HandlerMethodArgumentR
 				forward = false;
 			}
 		}
-		P pos = (cursor != null) ? this.cursorStrategy.fromCursor(cursor) : null;
+		P pos = cursor != null ? this.cursorStrategy.fromCursor(cursor) : null;
 		return createSubrange(pos, count, forward);
 	}
 

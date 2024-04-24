@@ -41,7 +41,7 @@ final class CompositeConnectionAdapter implements ConnectionAdapter {
 
 	@Override
 	public boolean supports(Class<?> containerType) {
-		return (getAdapter(containerType) != null);
+		return getAdapter(containerType) != null;
 	}
 
 	@Override

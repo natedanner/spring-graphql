@@ -41,8 +41,8 @@ public interface TypeVisitorHelper {
 	 * @param schema the GraphQL schema to use
 	 */
 	static TypeVisitorHelper create(GraphQLSchema schema) {
-		String name = (schema.getSubscriptionType() != null) ? schema.getSubscriptionType().getName() : null;
-		return (candidate) -> candidate.getName().equals(name);
+		String name = schema.getSubscriptionType() != null ? schema.getSubscriptionType().getName() : null;
+		return candidate -> candidate.getName().equals(name);
 	}
 
 }

@@ -30,7 +30,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.util.StringUtils;
 
-public class BookSource {
+public final class BookSource {
 
 	public static final Resource schema = new ClassPathResource("books/schema.graphqls");
 
@@ -87,7 +87,7 @@ public class BookSource {
 	@SuppressWarnings("ConstantConditions")
 	public static List<Book> findBooksByAuthor(String author) {
 		return Flux.fromIterable(books())
-				.filter((book) -> book.getAuthor().getFullName().contains(author))
+				.filter(book -> book.getAuthor().getFullName().contains(author))
 				.collectList()
 				.block();
 	}

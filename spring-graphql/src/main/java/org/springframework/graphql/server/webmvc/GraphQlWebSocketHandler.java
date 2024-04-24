@@ -235,7 +235,7 @@ public class GraphQlWebSocketHandler extends TextWebSocketHandler implements Sub
 					logger.debug("Executing: " + request);
 				}
 				this.graphQlHandler.handleRequest(request)
-						.flatMapMany((response) -> handleResponse(session, request.getId(), response))
+						.flatMapMany(response -> handleResponse(session, request.getId(), response))
 						.publishOn(state.getScheduler()) // Serial blocking send via single thread
 						.subscribe(new SendMessageSubscriber(id, session, state));
 			}
@@ -268,7 +268,7 @@ public class GraphQlWebSocketHandler extends TextWebSocketHandler implements Sub
 				this.webSocketGraphQlInterceptor.handleConnectionInitialization(state.getSessionInfo(), payload)
 						.defaultIfEmpty(Collections.emptyMap())
 						.publishOn(state.getScheduler()) // Serial blocking send via single thread
-						.doOnNext((ackPayload) -> {
+						.doOnNext(ackPayload -> {
 							TextMessage outputMessage = encode(GraphQlWebSocketMessage.connectionAck(ackPayload));
 							try {
 								session.sendMessage(outputMessage);
@@ -277,7 +277,7 @@ public class GraphQlWebSocketHandler extends TextWebSocketHandler implements Sub
 								throw new IllegalStateException(ex);
 							}
 						})
-						.onErrorResume((ex) -> {
+						.onErrorResume(ex -> {
 							GraphQlStatus.closeSession(session, GraphQlStatus.UNAUTHORIZED_STATUS);
 							return Mono.empty();
 						})
@@ -285,9 +285,9 @@ public class GraphQlWebSocketHandler extends TextWebSocketHandler implements Sub
 
 				if (this.keepAliveDuration != null) {
 					Flux.interval(this.keepAliveDuration, this.keepAliveDuration)
-							.filter((aLong) -> true)
+							.filter(aLong -> true)
 							.publishOn(state.getScheduler()) // Serial blocking send via single thread
-							.doOnNext((aLong) -> {
+							.doOnNext(aLong -> {
 								try {
 									session.sendMessage(encode(GraphQlWebSocketMessage.ping(null)));
 								}
@@ -318,7 +318,7 @@ public class GraphQlWebSocketHandler extends TextWebSocketHandler implements Sub
 	private Flux<TextMessage> handleResponse(WebSocketSession session, String id, WebGraphQlResponse response) {
 		if (logger.isDebugEnabled()) {
 			logger.debug("Execution result ready"
-					+ (!CollectionUtils.isEmpty(response.getErrors()) ? " with errors: " + response.getErrors() : "")
+					+ (CollectionUtils.isEmpty(response.getErrors()) ? "" : " with errors: " + response.getErrors())
 					+ ".");
 		}
 		Flux<Map<String, Object>> responseFlux;
@@ -326,7 +326,7 @@ public class GraphQlWebSocketHandler extends TextWebSocketHandler implements Sub
 			// Subscription
 			responseFlux = Flux.from((Publisher<ExecutionResult>) response.getData())
 					.map(ExecutionResult::toSpecification)
-					.doOnSubscribe((subscription) -> {
+					.doOnSubscribe(subscription -> {
 							Subscription prev = getSessionInfo(session).getSubscriptions().putIfAbsent(id, subscription);
 							if (prev != null) {
 								throw new SubscriptionExistsException();
@@ -339,20 +339,20 @@ public class GraphQlWebSocketHandler extends TextWebSocketHandler implements Sub
 		}
 
 		return responseFlux
-				.map((responseMap) -> encode(GraphQlWebSocketMessage.next(id, responseMap)))
+				.map(responseMap -> encode(GraphQlWebSocketMessage.next(id, responseMap)))
 				.concatWith(Mono.fromCallable(() -> encode(GraphQlWebSocketMessage.complete(id))))
-				.onErrorResume((ex) -> {
+				.onErrorResume(ex -> {
 					if (ex instanceof SubscriptionExistsException) {
 						CloseStatus status = new CloseStatus(4409, "Subscriber for " + id + " already exists");
 						GraphQlStatus.closeSession(session, status);
 						return Flux.empty();
 					}
-					List<GraphQLError> errors = ((ex instanceof SubscriptionPublisherException) ?
+					List<GraphQLError> errors = ex instanceof SubscriptionPublisherException ?
 							((SubscriptionPublisherException) ex).getErrors() :
 							Collections.singletonList(GraphqlErrorBuilder.newError()
 									.message("Subscription error")
 									.errorType(ErrorType.INTERNAL_ERROR)
-									.build()));
+									.build());
 					return Mono.just(encode(GraphQlWebSocketMessage.error(id, errors)));
 				});
 	}

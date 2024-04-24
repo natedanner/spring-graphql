@@ -119,18 +119,17 @@ final class DefaultWebSocketGraphQlTesterBuilder
 	@Override
 	public WebSocketGraphQlTester build() {
 		registerJsonPathMappingProvider();
-		WebSocketGraphQlClient client = this.graphQlClientBuilder.interceptors((list) -> list.addAll(this.interceptors)).build();
+		WebSocketGraphQlClient client = this.graphQlClientBuilder.interceptors(list -> list.addAll(this.interceptors)).build();
 		GraphQlTester graphQlTester = super.buildGraphQlTester(asTransport(client));
 		return new DefaultWebSocketGraphQlTester(graphQlTester, client, getBuilderInitializer());
 	}
 
 	private void registerJsonPathMappingProvider() {
-		this.graphQlClientBuilder.codecConfigurer((codecConfigurer) -> {
-			configureJsonPathConfig((jsonPathConfig) -> {
+		this.graphQlClientBuilder.codecConfigurer(codecConfigurer ->
+			configureJsonPathConfig(jsonPathConfig -> {
 				EncoderDecoderMappingProvider provider = new EncoderDecoderMappingProvider(codecConfigurer);
 				return jsonPathConfig.mappingProvider(provider);
-			});
-		});
+			}));
 	}
 
 

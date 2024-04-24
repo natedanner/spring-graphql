@@ -69,7 +69,7 @@ final class PropertySelection {
 	 */
 	static PropertySelection create(TypeInformation<?> typeInfo, DataFetchingFieldSelectionSet selectionSet) {
 		FieldSelection selection = new DataFetchingFieldSelection(selectionSet);
-		List<PropertyPath> paths = getPropertyPaths(typeInfo, selection, (path) -> PropertyPath.from(path, typeInfo));
+		List<PropertyPath> paths = getPropertyPaths(typeInfo, selection, path -> PropertyPath.from(path, typeInfo));
 		return new PropertySelection(paths);
 	}
 
@@ -108,13 +108,13 @@ final class PropertySelection {
 	}
 
 	private static boolean isConnectionEdges(SelectedField selectedField) {
-		return selectedField.getName().equals("edges") &&
+		return "edges".equals(selectedField.getName()) &&
 				selectedField.getParentField().getType() instanceof GraphQLNamedOutputType namedType &&
 				namedType.getName().endsWith("Connection");
 	}
 
 	private static boolean isConnectionEdgeNode(SelectedField selectedField) {
-		return selectedField.getName().equals("node") && isConnectionEdges(selectedField.getParentField());
+		return "node".equals(selectedField.getName()) && isConnectionEdges(selectedField.getParentField());
 	}
 
 	private static void getConnectionPropertyPaths(
@@ -180,12 +180,12 @@ final class PropertySelection {
 
 			for (SelectedField selectedField : this.allFields) {
 				if (field.equals(selectedField.getParentField())) {
-					selectedFields = (selectedFields != null) ? selectedFields : new ArrayList<>();
+					selectedFields = selectedFields != null ? selectedFields : new ArrayList<>();
 					selectedFields.add(selectedField);
 				}
 			}
 
-			return (selectedFields != null) ?
+			return selectedFields != null ?
 					new DataFetchingFieldSelection(selectedFields, this.allFields) :
 					EmptyFieldSelection.INSTANCE;
 		}

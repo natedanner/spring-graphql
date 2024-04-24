@@ -122,7 +122,7 @@ public final class DgsGraphQlClient {
 		 * @return ths same builder instance
 		 */
 		public RequestSpec coercing(Class<?> scalarType, Coercing<?, ?> coercing) {
-			this.coercingMap = (this.coercingMap != null) ? this.coercingMap : new LinkedHashMap<>();
+			this.coercingMap = this.coercingMap != null ? this.coercingMap : new LinkedHashMap<>();
 			this.coercingMap.put(scalarType, coercing);
 			return this;
 		}
@@ -133,7 +133,7 @@ public final class DgsGraphQlClient {
 		 * @return ths same builder instance
 		 */
 		public RequestSpec coercing(Map<Class<?>, Coercing<?, ?>> coercingMap) {
-			this.coercingMap = (this.coercingMap != null) ? this.coercingMap : new LinkedHashMap<>();
+			this.coercingMap = this.coercingMap != null ? this.coercingMap : new LinkedHashMap<>();
 			this.coercingMap.putAll(coercingMap);
 			return this;
 		}
@@ -147,7 +147,7 @@ public final class DgsGraphQlClient {
 		 * @return ths same builder instance
 		 */
 		public RequestSpec attribute(String name, Object value) {
-			this.attributes = (this.attributes != null) ? this.attributes : new HashMap<>();
+			this.attributes = this.attributes != null ? this.attributes : new HashMap<>();
 			this.attributes.put(name, value);
 			return this;
 		}
@@ -159,7 +159,7 @@ public final class DgsGraphQlClient {
 		 * @return ths same builder instance
 		 */
 		public RequestSpec attributes(Consumer<Map<String, Object>> attributesConsumer) {
-			this.attributes = (this.attributes != null) ? this.attributes : new HashMap<>();
+			this.attributes = this.attributes != null ? this.attributes : new HashMap<>();
 			attributesConsumer.accept(this.attributes);
 			return this;
 		}
@@ -248,15 +248,15 @@ public final class DgsGraphQlClient {
 			Assert.state(this.projectionNode != null || this.coercingMap == null,
 					"Coercing map provided without projection");
 
-			GraphQLQueryRequest request = (this.coercingMap != null) ?
+			GraphQLQueryRequest request = this.coercingMap != null ?
 					new GraphQLQueryRequest(this.query, this.projectionNode, this.coercingMap) :
 					new GraphQLQueryRequest(this.query, this.projectionNode);
 
-			String operationName = (this.query.getName() != null) ? this.query.getName() : null;
+			String operationName = this.query.getName() != null ? this.query.getName() : null;
 
 			return DgsGraphQlClient.this.graphQlClient.document(request.serialize())
 					.operationName(operationName)
-					.attributes((map) -> {
+					.attributes(map -> {
 						if (this.attributes != null) {
 							map.putAll(this.attributes);
 						}

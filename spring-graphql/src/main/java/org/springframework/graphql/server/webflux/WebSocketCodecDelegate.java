@@ -65,16 +65,16 @@ final class WebSocketCodecDelegate {
 
 	private static Decoder<?> findJsonDecoder(CodecConfigurer configurer) {
 		return configurer.getReaders().stream()
-				.filter((reader) -> reader.canRead(MESSAGE_TYPE, MediaType.APPLICATION_JSON))
-				.map((reader) -> ((DecoderHttpMessageReader<?>) reader).getDecoder())
+				.filter(reader -> reader.canRead(MESSAGE_TYPE, MediaType.APPLICATION_JSON))
+				.map(reader -> ((DecoderHttpMessageReader<?>) reader).getDecoder())
 				.findFirst()
 				.orElseThrow(() -> new IllegalArgumentException("No JSON Decoder"));
 	}
 
 	private static Encoder<?> findJsonEncoder(CodecConfigurer configurer) {
 		return configurer.getWriters().stream()
-				.filter((writer) -> writer.canWrite(MESSAGE_TYPE, MediaType.APPLICATION_JSON))
-				.map((writer) -> ((EncoderHttpMessageWriter<?>) writer).getEncoder())
+				.filter(writer -> writer.canWrite(MESSAGE_TYPE, MediaType.APPLICATION_JSON))
+				.map(writer -> ((EncoderHttpMessageWriter<?>) writer).getEncoder())
 				.findFirst()
 				.orElseThrow(() -> new IllegalArgumentException("No JSON Encoder"));
 	}
@@ -106,12 +106,12 @@ final class WebSocketCodecDelegate {
 	}
 
 	WebSocketMessage encodeError(WebSocketSession session, String id, Throwable ex) {
-		List<GraphQLError> errors = ((ex instanceof SubscriptionPublisherException) ?
+		List<GraphQLError> errors = ex instanceof SubscriptionPublisherException ?
 				((SubscriptionPublisherException) ex).getErrors() :
 				Collections.singletonList(GraphqlErrorBuilder.newError()
 						.message("Subscription error")
 						.errorType(ErrorType.INTERNAL_ERROR)
-						.build()));
+						.build());
 		return encode(session, GraphQlWebSocketMessage.error(id, errors));
 	}
 

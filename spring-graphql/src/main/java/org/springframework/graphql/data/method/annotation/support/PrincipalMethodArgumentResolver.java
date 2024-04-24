@@ -74,7 +74,7 @@ public class PrincipalMethodArgumentResolver implements HandlerMethodArgumentRes
 	}
 
 	private static boolean isRequired(MethodParameter parameter) {
-		return (!parameter.isOptional() && !Mono.class.isAssignableFrom(parameter.getParameterType()));
+		return !parameter.isOptional() && !Mono.class.isAssignableFrom(parameter.getParameterType());
 	}
 
 }

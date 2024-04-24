@@ -152,7 +152,7 @@ public abstract class QuerydslDataFetcher<T> {
 
 		for (Map.Entry<String, Object> entry : getArgumentValues(environment).entrySet()) {
 			Object value = entry.getValue();
-			List<Object> values = (value instanceof List) ? (List<Object>) value : Collections.singletonList(value);
+			List<Object> values = value instanceof List ? (List<Object>) value : Collections.singletonList(value);
 			parameters.put(entry.getKey(), values);
 		}
 
@@ -344,7 +344,7 @@ public abstract class QuerydslDataFetcher<T> {
 
 	@SuppressWarnings("rawtypes")
 	private static QuerydslBinderCustomizer customizer(Object executor) {
-		return (executor instanceof QuerydslBinderCustomizer<?>) ?
+		return executor instanceof QuerydslBinderCustomizer<?> ?
 				(QuerydslBinderCustomizer<? extends EntityPath<?>>) executor :
 				NO_OP_BINDER_CUSTOMIZER;
 	}
@@ -464,8 +464,8 @@ public abstract class QuerydslDataFetcher<T> {
 		@Deprecated(since = "1.2.5", forRemoval = true)
 		public Builder<T, R> defaultScrollSubrange(@Nullable ScrollSubrange defaultSubrange) {
 			return new Builder<>(this.executor, this.domainType, this.resultType, this.cursorStrategy,
-					(defaultSubrange != null) ? defaultSubrange.count().getAsInt() : null,
-					(defaultSubrange != null) ? (forward) -> defaultSubrange.position().get() : null,
+					defaultSubrange != null ? defaultSubrange.count().getAsInt() : null,
+					defaultSubrange != null ? forward -> defaultSubrange.position().get() : null,
 					this.sort, this.customizer);
 		}
 
@@ -525,9 +525,9 @@ public abstract class QuerydslDataFetcher<T> {
 		public DataFetcher<Iterable<R>> scrollable() {
 			return new ScrollableEntityFetcher<>(
 					this.executor, this.domainType, this.resultType,
-					(this.cursorStrategy != null) ? this.cursorStrategy : RepositoryUtils.defaultCursorStrategy(),
-					(this.defaultScrollCount != null) ? this.defaultScrollCount : RepositoryUtils.defaultScrollCount(),
-					(this.defaultScrollPosition != null) ? this.defaultScrollPosition : RepositoryUtils.defaultScrollPosition(),
+					this.cursorStrategy != null ? this.cursorStrategy : RepositoryUtils.defaultCursorStrategy(),
+					this.defaultScrollCount != null ? this.defaultScrollCount : RepositoryUtils.defaultScrollCount(),
+					this.defaultScrollPosition != null ? this.defaultScrollPosition : RepositoryUtils.defaultScrollPosition(),
 					this.sort, this.customizer);
 		}
 
@@ -671,8 +671,8 @@ public abstract class QuerydslDataFetcher<T> {
 		public ReactiveBuilder<T, R> defaultScrollSubrange(@Nullable ScrollSubrange defaultSubrange) {
 			return new ReactiveBuilder<>(this.executor, this.domainType, this.resultType,
 					this.cursorStrategy,
-					(defaultSubrange != null) ? defaultSubrange.count().getAsInt() : null,
-					(defaultSubrange != null) ? (forward) -> defaultSubrange.position().get() : null,
+					defaultSubrange != null ? defaultSubrange.count().getAsInt() : null,
+					defaultSubrange != null ? forward -> defaultSubrange.position().get() : null,
 					this.sort, this.customizer);
 		}
 
@@ -732,9 +732,9 @@ public abstract class QuerydslDataFetcher<T> {
 		public DataFetcher<Mono<Iterable<R>>> scrollable() {
 			return new ReactiveScrollableEntityFetcher<>(
 					this.executor, this.domainType, this.resultType,
-					(this.cursorStrategy != null) ? this.cursorStrategy : RepositoryUtils.defaultCursorStrategy(),
-					(this.defaultScrollCount != null) ? this.defaultScrollCount : RepositoryUtils.defaultScrollCount(),
-					(this.defaultScrollPosition != null) ? this.defaultScrollPosition : RepositoryUtils.defaultScrollPosition(),
+					this.cursorStrategy != null ? this.cursorStrategy : RepositoryUtils.defaultCursorStrategy(),
+					this.defaultScrollCount != null ? this.defaultScrollCount : RepositoryUtils.defaultScrollCount(),
+					this.defaultScrollPosition != null ? this.defaultScrollPosition : RepositoryUtils.defaultScrollPosition(),
 					this.sort, this.customizer);
 		}
 
@@ -789,7 +789,7 @@ public abstract class QuerydslDataFetcher<T> {
 		@Override
 		@SuppressWarnings({"ConstantConditions", "unchecked"})
 		public R get(DataFetchingEnvironment env) {
-			return this.executor.findBy(buildPredicate(env), (query) -> {
+			return this.executor.findBy(buildPredicate(env), query -> {
 				FetchableFluentQuery<R> queryToUse = (FetchableFluentQuery<R>) query;
 
 				if (this.sort.isSorted()) {
@@ -839,7 +839,7 @@ public abstract class QuerydslDataFetcher<T> {
 		@Override
 		@SuppressWarnings("unchecked")
 		public Iterable<R> get(DataFetchingEnvironment env) {
-			return this.executor.findBy(buildPredicate(env), (query) -> {
+			return this.executor.findBy(buildPredicate(env), query -> {
 				FetchableFluentQuery<R> queryToUse = (FetchableFluentQuery<R>) query;
 
 				if (this.sort.isSorted()) {
@@ -895,8 +895,8 @@ public abstract class QuerydslDataFetcher<T> {
 		protected Iterable<R> getResult(FetchableFluentQuery<R> queryToUse, DataFetchingEnvironment env) {
 			ScrollSubrange range = RepositoryUtils.getScrollSubrange(env, this.cursorStrategy);
 			int count = range.count().orElse(this.defaultCount);
-			ScrollPosition position = (range.position().isPresent() ?
-					range.position().get() : this.defaultPosition.apply(range.forward()));
+			ScrollPosition position = range.position().isPresent() ?
+					range.position().get() : this.defaultPosition.apply(range.forward());
 			return queryToUse.limit(count).scroll(position);
 		}
 
@@ -932,7 +932,7 @@ public abstract class QuerydslDataFetcher<T> {
 		@Override
 		@SuppressWarnings("unchecked")
 		public Mono<R> get(DataFetchingEnvironment env) {
-			return this.executor.findBy(buildPredicate(env), (query) -> {
+			return this.executor.findBy(buildPredicate(env), query -> {
 				FluentQuery.ReactiveFluentQuery<R> queryToUse = (FluentQuery.ReactiveFluentQuery<R>) query;
 
 				if (this.sort.isSorted()) {
@@ -982,7 +982,7 @@ public abstract class QuerydslDataFetcher<T> {
 		@Override
 		@SuppressWarnings("unchecked")
 		public Flux<R> get(DataFetchingEnvironment env) {
-			return this.executor.findBy(buildPredicate(env), (query) -> {
+			return this.executor.findBy(buildPredicate(env), query -> {
 				FluentQuery.ReactiveFluentQuery<R> queryToUse = (FluentQuery.ReactiveFluentQuery<R>) query;
 
 				if (this.sort.isSorted()) {
@@ -1052,7 +1052,7 @@ public abstract class QuerydslDataFetcher<T> {
 		@Override
 		@SuppressWarnings("unchecked")
 		public Mono<Iterable<R>> get(DataFetchingEnvironment env) {
-			return this.executor.findBy(buildPredicate(env), (query) -> {
+			return this.executor.findBy(buildPredicate(env), query -> {
 				FluentQuery.ReactiveFluentQuery<R> queryToUse = (FluentQuery.ReactiveFluentQuery<R>) query;
 
 				if (this.sort.isSorted()) {
@@ -1068,8 +1068,8 @@ public abstract class QuerydslDataFetcher<T> {
 
 				ScrollSubrange range = RepositoryUtils.getScrollSubrange(env, this.cursorStrategy);
 				int count = range.count().orElse(this.defaultCount);
-				ScrollPosition position = (range.position().isPresent() ?
-						range.position().get() : this.defaultPosition.apply(range.forward()));
+				ScrollPosition position = range.position().isPresent() ?
+						range.position().get() : this.defaultPosition.apply(range.forward());
 				return queryToUse.limit(count).scroll(position).map(Function.identity());
 			});
 		}

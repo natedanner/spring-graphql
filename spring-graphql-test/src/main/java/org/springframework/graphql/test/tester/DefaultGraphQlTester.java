@@ -153,7 +153,7 @@ final class DefaultGraphQlTester implements GraphQlTester {
 		@SuppressWarnings("ConstantConditions")
 		@Override
 		public Response execute() {
-			return DefaultGraphQlTester.this.transport.execute(request()).map((response) -> mapResponse(response, request())).block(DefaultGraphQlTester.this.responseTimeout);
+			return DefaultGraphQlTester.this.transport.execute(request()).map(response -> mapResponse(response, request())).block(DefaultGraphQlTester.this.responseTimeout);
 		}
 
 		@Override
@@ -163,7 +163,7 @@ final class DefaultGraphQlTester implements GraphQlTester {
 
 		@Override
 		public Subscription executeSubscription() {
-			return () -> DefaultGraphQlTester.this.transport.executeSubscription(request()).map((result) -> mapResponse(result, request()));
+			return () -> DefaultGraphQlTester.this.transport.executeSubscription(request()).map(result -> mapResponse(result, request()));
 		}
 
 		private GraphQlRequest request() {
@@ -175,7 +175,7 @@ final class DefaultGraphQlTester implements GraphQlTester {
 		}
 
 		private Consumer<Runnable> assertDecorator(GraphQlRequest request) {
-			return (assertion) -> {
+			return assertion -> {
 				try {
 					assertion.run();
 				}
@@ -258,7 +258,7 @@ final class DefaultGraphQlTester implements GraphQlTester {
 		}
 
 		void consumeErrors(Consumer<List<ResponseError>> consumer) {
-			filterErrors((error) -> true);
+			filterErrors(error -> true);
 			consumer.accept(this.errors);
 		}
 
@@ -464,7 +464,7 @@ final class DefaultGraphQlTester implements GraphQlTester {
 		}
 
 		private static String joinPaths(@Nullable String basePath, String path) {
-			return (basePath != null) ? basePath + "." + path : path;
+			return basePath != null ? basePath + "." + path : path;
 		}
 
 

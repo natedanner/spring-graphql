@@ -61,16 +61,16 @@ final class HttpCodecDelegate {
 
 	private static Decoder<?> findJsonDecoder(CodecConfigurer configurer) {
 		return configurer.getReaders().stream()
-				.filter((reader) -> reader.canRead(REQUEST_TYPE, MediaType.APPLICATION_JSON))
-				.map((reader) -> ((DecoderHttpMessageReader<?>) reader).getDecoder())
+				.filter(reader -> reader.canRead(REQUEST_TYPE, MediaType.APPLICATION_JSON))
+				.map(reader -> ((DecoderHttpMessageReader<?>) reader).getDecoder())
 				.findFirst()
 				.orElseThrow(() -> new IllegalArgumentException("No JSON Decoder"));
 	}
 
 	private static Encoder<?> findJsonEncoder(CodecConfigurer configurer) {
 		return configurer.getWriters().stream()
-				.filter((writer) -> writer.canWrite(RESPONSE_TYPE, MediaType.APPLICATION_JSON))
-				.map((writer) -> ((EncoderHttpMessageWriter<?>) writer).getEncoder())
+				.filter(writer -> writer.canWrite(RESPONSE_TYPE, MediaType.APPLICATION_JSON))
+				.map(writer -> ((EncoderHttpMessageWriter<?>) writer).getEncoder())
 				.findFirst()
 				.orElseThrow(() -> new IllegalArgumentException("No JSON Encoder"));
 	}

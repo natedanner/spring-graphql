@@ -59,7 +59,7 @@ public class JavaConventions {
 	}
 
 	public void apply(Project project) {
-		project.getPlugins().withType(JavaLibraryPlugin.class, (javaPlugin) -> applyJavaCompileConventions(project));
+		project.getPlugins().withType(JavaLibraryPlugin.class, javaPlugin -> applyJavaCompileConventions(project));
 	}
 
 	/**
@@ -69,15 +69,15 @@ public class JavaConventions {
 	 */
 	private void applyJavaCompileConventions(Project project) {
 		project.getTasks().withType(JavaCompile.class)
-				.matching((compileTask) -> compileTask.getName().equals(JavaPlugin.COMPILE_JAVA_TASK_NAME))
-				.forEach((compileTask) -> {
+				.matching(compileTask -> compileTask.getName().equals(JavaPlugin.COMPILE_JAVA_TASK_NAME))
+				.forEach(compileTask -> {
 					compileTask.getOptions().setCompilerArgs(COMPILER_ARGS);
 					compileTask.getOptions().setEncoding("UTF-8");
 				});
 		project.getTasks().withType(JavaCompile.class)
-				.matching((compileTask) -> compileTask.getName().equals(JavaPlugin.COMPILE_TEST_JAVA_TASK_NAME)
-						|| compileTask.getName().equals("compileTestFixturesJava"))
-				.forEach((compileTask) -> {
+				.matching(compileTask -> compileTask.getName().equals(JavaPlugin.COMPILE_TEST_JAVA_TASK_NAME)
+						|| "compileTestFixturesJava".equals(compileTask.getName()))
+				.forEach(compileTask -> {
 					compileTask.getOptions().setCompilerArgs(TEST_COMPILER_ARGS);
 					compileTask.getOptions().setEncoding("UTF-8");
 				});

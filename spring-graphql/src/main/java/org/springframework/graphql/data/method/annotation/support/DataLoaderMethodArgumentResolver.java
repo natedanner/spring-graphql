@@ -81,7 +81,7 @@ public class DataLoaderMethodArgumentResolver implements HandlerMethodArgumentRe
 			ParameterizedType parameterizedType = (ParameterizedType) genericType;
 			if (parameterizedType.getActualTypeArguments().length == 2) {
 				Type valueType = parameterizedType.getActualTypeArguments()[1];
-				return (valueType instanceof Class) ?
+				return valueType instanceof Class ?
 						(Class<?>) valueType : ResolvableType.forType(valueType).resolve();
 			}
 		}
@@ -93,7 +93,7 @@ public class DataLoaderMethodArgumentResolver implements HandlerMethodArgumentRe
 			@Nullable Class<?> valueType, @Nullable String parameterName) {
 
 		String message = "Cannot resolve DataLoader for parameter" +
-				((parameterName != null) ? " '" + parameterName + "'" : "[" + parameter.getParameterIndex() + "]") +
+				(parameterName != null ? " '" + parameterName + "'" : "[" + parameter.getParameterIndex() + "]") +
 				" in method " + parameter.getMethod().toGenericString() + ". ";
 
 		if (valueType == null) {

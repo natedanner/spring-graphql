@@ -67,7 +67,7 @@ public class GraphQlSseHandler extends AbstractGraphQlHttpHandler {
 	@SuppressWarnings("unchecked")
 	public Mono<ServerResponse> handleRequest(ServerRequest serverRequest) {
 		Flux<ServerSentEvent<Map<String, Object>>> data = readRequest(serverRequest)
-				.flatMap((body) -> {
+				.flatMap(body -> {
 					WebGraphQlRequest graphQlRequest = new WebGraphQlRequest(
 							serverRequest.uri(), serverRequest.headers().asHttpHeaders(),
 							serverRequest.cookies(), serverRequest.remoteAddress().orElse(null),
@@ -79,10 +79,10 @@ public class GraphQlSseHandler extends AbstractGraphQlHttpHandler {
 					}
 					return this.graphQlHandler.handleRequest(graphQlRequest);
 				})
-				.flatMapMany((response) -> {
+				.flatMapMany(response -> {
 					if (logger.isDebugEnabled()) {
 						logger.debug("Execution result ready"
-								+ (!CollectionUtils.isEmpty(response.getErrors()) ? " with errors: " + response.getErrors() : "")
+								+ (CollectionUtils.isEmpty(response.getErrors()) ? "" : " with errors: " + response.getErrors())
 								+ ".");
 					}
 					if (response.getData() instanceof Publisher) {
@@ -99,15 +99,15 @@ public class GraphQlSseHandler extends AbstractGraphQlHttpHandler {
 					return Flux.error(new SubscriptionPublisherException(Collections.singletonList(unsupportedOperationError),
 							new IllegalArgumentException(errorMessage)));
 				})
-				.onErrorResume(SubscriptionPublisherException.class, (exc) -> {
+				.onErrorResume(SubscriptionPublisherException.class, exc -> {
 					ExecutionResult errorResult = ExecutionResult.newExecutionResult().errors(exc.getErrors()).build();
 					return Flux.just(errorResult.toSpecification());
 				})
-				.map((event) -> ServerSentEvent.builder(event).event("next").build());
+				.map(event -> ServerSentEvent.builder(event).event("next").build());
 
 		Flux<ServerSentEvent<Map<String, Object>>> body = data.concatWith(COMPLETE_EVENT);
 		return ServerResponse.ok().contentType(MediaType.TEXT_EVENT_STREAM).body(BodyInserters.fromServerSentEvents(body))
-				.onErrorResume(Throwable.class, (exc) -> ServerResponse.badRequest().build());
+				.onErrorResume(Throwable.class, exc -> ServerResponse.badRequest().build());
 	}
 
 }

@@ -91,7 +91,7 @@ public final class FederationSchemaFactory
 	public void afterPropertiesSet() {
 		super.afterPropertiesSet();
 
-		detectHandlerMethods().forEach((info) ->
+		detectHandlerMethods().forEach(info ->
 				this.handlerMethods.put(info.typeName(),
 						new EntityHandlerMethod(info, getArgumentResolvers(), getExecutor())));
 

@@ -68,7 +68,7 @@ public class ConnectionTypeDefinitionConfigurer implements TypeDefinitionConfigu
 					.fieldDefinition(initFieldDefinition("endCursor", STRING_TYPE))
 					.build());
 
-			typeNames.forEach((typeName) -> {
+			typeNames.forEach(typeName -> {
 				String connectionTypeName = typeName + "Connection";
 				String edgeTypeName = typeName + "Edge";
 
@@ -91,19 +91,19 @@ public class ConnectionTypeDefinitionConfigurer implements TypeDefinitionConfigu
 		return Stream.concat(
 						registry.types().values().stream(),
 						registry.objectTypeExtensions().values().stream().flatMap(Collection::stream))
-				.filter((definition) -> definition instanceof ImplementingTypeDefinition)
-				.flatMap((definition) -> {
+				.filter(ImplementingTypeDefinition.class::isInstance)
+				.flatMap(definition -> {
 					ImplementingTypeDefinition<?> typeDefinition = (ImplementingTypeDefinition<?>) definition;
 					return typeDefinition.getFieldDefinitions().stream()
-							.map((fieldDefinition) -> {
+							.map(fieldDefinition -> {
 								Type<?> type = fieldDefinition.getType();
-								return (type instanceof NonNullType) ? ((NonNullType) type).getType() : type;
+								return type instanceof NonNullType ? ((NonNullType) type).getType() : type;
 							})
-							.filter((type) -> type instanceof TypeName)
-							.map((type) -> ((TypeName) type).getName())
-							.filter((name) -> name.endsWith("Connection"))
-							.filter((name) -> registry.getType(name).isEmpty())
-							.map((name) -> name.substring(0, name.length() - "Connection".length()));
+							.filter(TypeName.class::isInstance)
+							.map(type -> ((TypeName) type).getName())
+							.filter(name -> name.endsWith("Connection"))
+							.filter(name -> registry.getType(name).isEmpty())
+							.map(name -> name.substring(0, name.length() - "Connection".length()));
 				})
 				.collect(Collectors.toCollection(LinkedHashSet::new));
 	}

@@ -147,7 +147,7 @@ public abstract class AbstractGraphQlClientSyncBuilder<B extends AbstractGraphQl
 	protected GraphQlClient buildGraphQlClient(SyncGraphQlTransport transport) {
 
 		if (jackson2Present) {
-			this.jsonConverter = (this.jsonConverter == null) ?
+			this.jsonConverter = this.jsonConverter == null ?
 					DefaultJacksonConverter.initialize() : this.jsonConverter;
 		}
 
@@ -159,8 +159,8 @@ public abstract class AbstractGraphQlClientSyncBuilder<B extends AbstractGraphQl
 	 * Return a {@code Consumer} to initialize new builders from "this" builder.
 	 */
 	protected Consumer<AbstractGraphQlClientSyncBuilder<?>> getBuilderInitializer() {
-		return (builder) -> {
-			builder.interceptors((interceptorList) -> interceptorList.addAll(this.interceptors));
+		return builder -> {
+			builder.interceptors(interceptorList -> interceptorList.addAll(this.interceptors));
 			builder.documentSource(this.documentSource);
 			builder.setJsonConverter(getJsonConverter());
 		};
@@ -171,14 +171,14 @@ public abstract class AbstractGraphQlClientSyncBuilder<B extends AbstractGraphQl
 		Encoder<?> encoder = HttpMessageConverterDelegate.asEncoder(getJsonConverter());
 		Decoder<?> decoder = HttpMessageConverterDelegate.asDecoder(getJsonConverter());
 
-		Chain chain = (request) -> {
+		Chain chain = request -> {
 			GraphQlResponse response = transport.execute(request);
 			return new DefaultClientGraphQlResponse(request, response, encoder, decoder);
 		};
 
 		return this.interceptors.stream()
 				.reduce(SyncGraphQlClientInterceptor::andThen)
-				.map((i) -> (Chain) (request) -> i.intercept(request, chain))
+				.map(i -> (Chain) request -> i.intercept(request, chain))
 				.orElse(chain);
 	}
 

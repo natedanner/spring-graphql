@@ -156,7 +156,7 @@ class GraphQlObservationInstrumentationTests {
 				.hasLowCardinalityKeyValue("graphql.outcome", "SUCCESS")
 				.hasLowCardinalityKeyValue("graphql.field.name", "bookById")
 				.hasHighCardinalityKeyValue("graphql.field.path", "/bookById")
-				.hasParentObservationContextMatching(context -> context instanceof ExecutionRequestObservationContext);
+				.hasParentObservationContextMatching(ExecutionRequestObservationContext.class::isInstance);
 
 		TestObservationRegistryAssert.assertThat(this.observationRegistry)
 				.hasAnObservationWithAKeyValue("graphql.field.name", "author")
@@ -259,7 +259,7 @@ class GraphQlObservationInstrumentationTests {
 		TestObservationRegistryAssert.assertThat(this.observationRegistry)
 				.hasObservationWithNameEqualTo("graphql.datafetcher")
 				.that()
-				.hasParentObservationContextMatching(context -> context instanceof ExecutionRequestObservationContext);
+				.hasParentObservationContextMatching(ExecutionRequestObservationContext.class::isInstance);
 	}
 
 	@Test

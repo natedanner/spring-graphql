@@ -107,11 +107,11 @@ public class GraphQlRSocketHandler {
 	}
 
 	private static Chain initChain(ExecutionGraphQlService service, List<RSocketGraphQlInterceptor> interceptors) {
-		Chain endOfChain = (request) -> service.execute(request).map(RSocketGraphQlResponse::new);
+		Chain endOfChain = request -> service.execute(request).map(RSocketGraphQlResponse::new);
 		return interceptors.isEmpty() ? endOfChain :
 				interceptors.stream()
 						.reduce(RSocketGraphQlInterceptor::andThen)
-						.map((interceptor) -> interceptor.apply(endOfChain))
+						.map(interceptor -> interceptor.apply(endOfChain))
 						.orElse(endOfChain);
 	}
 
@@ -130,7 +130,7 @@ public class GraphQlRSocketHandler {
 	 */
 	public Flux<Map<String, Object>> handleSubscription(Map<String, Object> payload) {
 		return handleInternal(payload)
-				.flatMapMany((response) -> {
+				.flatMapMany(response -> {
 					if (response.getData() instanceof Publisher) {
 						Publisher<ExecutionResult> publisher = response.getData();
 						return Flux.from(publisher).map(ExecutionResult::toSpecification);

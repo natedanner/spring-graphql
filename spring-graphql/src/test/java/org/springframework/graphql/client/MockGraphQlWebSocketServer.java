@@ -153,7 +153,7 @@ public final class MockGraphQlWebSocketServer implements WebSocketHandler {
 	}
 
 
-	private static class Exchange implements ResponseSpec {
+	private static final class Exchange implements ResponseSpec {
 
 		private final GraphQlRequest request;
 

@@ -60,7 +60,7 @@ public class GraphQlHttpHandlerTests {
 			List.of(new MappingJackson2HttpMessageConverter(), new ByteArrayHttpMessageConverter());
 
 	private final GraphQlHttpHandler greetingHandler = GraphQlSetup.schemaContent("type Query { greeting: String }")
-			.queryFetcher("greeting", (env) -> "Hello").toHttpHandler();
+			.queryFetcher("greeting", env -> "Hello").toHttpHandler();
 
 
 	@Test
@@ -97,7 +97,7 @@ public class GraphQlHttpHandlerTests {
 	@Test
 	void locale() throws Exception {
 		GraphQlHttpHandler handler = GraphQlSetup.schemaContent("type Query { greeting: String }")
-				.queryFetcher("greeting", (env) -> "Hello in " + env.getLocale())
+				.queryFetcher("greeting", env -> "Hello in " + env.getLocale())
 				.toHttpHandler();
 
 		MockHttpServletRequest request = createServletRequest(
@@ -117,7 +117,7 @@ public class GraphQlHttpHandlerTests {
 	@Test
 	void shouldSetExecutionId() throws Exception {
 		GraphQlHttpHandler handler = GraphQlSetup.schemaContent("type Query { showId: ID! }")
-				.queryFetcher("showId", (env) -> env.getExecutionId().toString())
+				.queryFetcher("showId", env -> env.getExecutionId().toString())
 				.toHttpHandler();
 
 		MockHttpServletRequest request = createServletRequest(
@@ -133,7 +133,7 @@ public class GraphQlHttpHandlerTests {
 	@Test
 	void shouldUseCustomMessageConverter() throws Exception {
 		WebGraphQlHandler webGraphQlHandler = GraphQlSetup.schemaContent("type Query { greeting: String }")
-				.queryFetcher("greeting", (env) -> "Hello").toWebGraphQlHandler();
+				.queryFetcher("greeting", env -> "Hello").toWebGraphQlHandler();
 
 		GraphQlHttpHandler handler = new GraphQlHttpHandler(webGraphQlHandler, new MappingJackson2HttpMessageConverter());
 		MockHttpServletRequest servletRequest = createServletRequest("{ greeting }", MediaType.APPLICATION_GRAPHQL_RESPONSE_VALUE);

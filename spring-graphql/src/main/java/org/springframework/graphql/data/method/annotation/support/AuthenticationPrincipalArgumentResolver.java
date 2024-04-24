@@ -98,19 +98,19 @@ public class AuthenticationPrincipalArgumentResolver implements HandlerMethodArg
 	@Override
 	public Object resolveArgument(MethodParameter parameter, DataFetchingEnvironment environment) throws Exception {
 		return getCurrentAuthentication(parameter)
-				.mapNotNull((auth) -> resolvePrincipal(parameter, auth.getPrincipal()))
-				.transform((argument) -> isPublisherOrMono(parameter) ? Mono.just(argument) : argument);
+				.mapNotNull(auth -> resolvePrincipal(parameter, auth.getPrincipal()))
+				.transform(argument -> isPublisherOrMono(parameter) ? Mono.just(argument) : argument);
 	}
 
 	private static boolean isPublisherOrMono(MethodParameter parameter) {
 		Class<?> type = parameter.getParameterType();
-		return (Publisher.class.equals(type) || Mono.class.equals(type));
+		return Publisher.class.equals(type) || Mono.class.equals(type);
 	}
 
 	@SuppressWarnings("unchecked")
 	private Mono<Authentication> getCurrentAuthentication(MethodParameter parameter) {
 		Object value = PrincipalMethodArgumentResolver.resolveAuthentication(parameter);
-		return (value instanceof Authentication auth) ? Mono.just(auth) : (Mono<Authentication>) value;
+		return value instanceof Authentication auth ? Mono.just(auth) : (Mono<Authentication>) value;
 	}
 
 	@Nullable

@@ -106,7 +106,7 @@ public abstract class AbstractGraphQlResponse implements GraphQlResponse {
 				dataPath.add(readingIndex ? Integer.parseInt(token) : token);
 				sb.delete(0, sb.length());
 
-				readingIndex = (c == '[');
+				readingIndex = c == '[';
 			}
 
 			return dataPath;
@@ -114,7 +114,7 @@ public abstract class AbstractGraphQlResponse implements GraphQlResponse {
 
 		@Nullable
 		private static Object initFieldValue(List<Object> path, GraphQlResponse response) {
-			Object value = (response.isValid() ? response.getData() : null);
+			Object value = response.isValid() ? response.getData() : null;
 			for (Object segment : path) {
 				if (value == null) {
 					return null;
@@ -126,7 +126,7 @@ public abstract class AbstractGraphQlResponse implements GraphQlResponse {
 				else {
 					Assert.isTrue(value instanceof List, () -> "Invalid path " + path + ", data: " + response.getData());
 					int index = (int) segment;
-					value = (index < ((List<?>) value).size()) ? ((List<?>) value).get(index) : null;
+					value = index < ((List<?>) value).size() ? ((List<?>) value).get(index) : null;
 				}
 			}
 			return value;
@@ -142,9 +142,9 @@ public abstract class AbstractGraphQlResponse implements GraphQlResponse {
 				return Collections.emptyList();
 			}
 			return response.getErrors().stream()
-					.filter((error) -> {
+					.filter(error -> {
 						String errorPath = error.getPath();
-						return (!errorPath.isEmpty() && (errorPath.startsWith(path) || path.startsWith(errorPath)));
+						return !errorPath.isEmpty() && (errorPath.startsWith(path) || path.startsWith(errorPath));
 					})
 					.collect(Collectors.toList());
 		}

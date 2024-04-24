@@ -146,7 +146,7 @@ public class DefaultBatchLoaderRegistry implements BatchLoaderRegistry {
 
 		@Override
 		public RegistrationSpec<K, V> withOptions(Consumer<DataLoaderOptions> optionsConsumer) {
-			this.optionsConsumer = (this.optionsConsumer != null) ?
+			this.optionsConsumer = this.optionsConsumer != null ?
 					this.optionsConsumer.andThen(optionsConsumer) : optionsConsumer;
 			return this;
 		}
@@ -174,13 +174,13 @@ public class DefaultBatchLoaderRegistry implements BatchLoaderRegistry {
 				return this.name;
 			}
 			Assert.notNull(this.valueType, "Value type not available to select a default DataLoader name.");
-			return (StringUtils.hasText(this.name) ? this.name : this.valueType.getName());
+			return StringUtils.hasText(this.name) ? this.name : this.valueType.getName();
 		}
 
 		private Supplier<DataLoaderOptions> initOptionsSupplier() {
 
 			Supplier<DataLoaderOptions> optionsSupplier = () ->
-					new DataLoaderOptions((this.options != null) ?
+					new DataLoaderOptions(this.options != null ?
 							this.options : DefaultBatchLoaderRegistry.this.defaultOptionsSupplier.get());
 
 			if (this.optionsConsumer == null) {

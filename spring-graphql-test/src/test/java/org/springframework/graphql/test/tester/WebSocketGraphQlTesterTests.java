@@ -69,7 +69,7 @@ class WebSocketGraphQlTesterTests {
 
 		@Override
 		public Mono<ClientGraphQlResponse> intercept(ClientGraphQlRequest request, Chain chain) {
-			return chain.next(request).doOnNext((response) -> executed.set(true));
+			return chain.next(request).doOnNext(response -> executed.set(true));
 		}
 	}
 

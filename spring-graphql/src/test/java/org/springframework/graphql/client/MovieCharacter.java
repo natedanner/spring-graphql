@@ -56,7 +56,7 @@ public class MovieCharacter {
 
 	@Override
 	public int hashCode() {
-		return (this.name != null) ? this.name.hashCode() : super.hashCode();
+		return this.name != null ? this.name.hashCode() : super.hashCode();
 	}
 
 	@Override

@@ -302,12 +302,12 @@ public class HandlerMethod {
 			return false;
 		}
 		HandlerMethod otherMethod = (HandlerMethod) other;
-		return (this.bean.equals(otherMethod.bean) && this.method.equals(otherMethod.method));
+		return this.bean.equals(otherMethod.bean) && this.method.equals(otherMethod.method);
 	}
 
 	@Override
 	public int hashCode() {
-		return (this.bean.hashCode() * 31 + this.method.hashCode());
+		return this.bean.hashCode() * 31 + this.method.hashCode();
 	}
 
 	@Override
@@ -360,7 +360,7 @@ public class HandlerMethod {
 	protected String formatInvokeError(String text, Object[] args) {
 
 		String formattedArgs = IntStream.range(0, args.length)
-				.mapToObj((i) -> (args[i] != null) ?
+				.mapToObj(i -> args[i] != null ?
 						"[" + i + "] [type=" + args[i].getClass().getName() + "] [value=" + args[i] + "]" :
 						"[" + i + "] [null]")
 				.collect(Collectors.joining(",\n", " ", " "));
@@ -465,7 +465,7 @@ public class HandlerMethod {
 
 		@Override
 		public Class<?> getParameterType() {
-			return (this.returnValue != null) ? this.returnValue.getClass() : super.getParameterType();
+			return this.returnValue != null ? this.returnValue.getClass() : super.getParameterType();
 		}
 
 		@Override

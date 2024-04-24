@@ -82,7 +82,7 @@ public abstract class SubscriptionExceptionResolverAdapter implements Subscripti
 	@Override
 	public final Mono<List<GraphQLError>> resolveException(Throwable exception) {
 		if (this.threadLocalContextAware) {
-			return Mono.deferContextual((contextView) -> {
+			return Mono.deferContextual(contextView -> {
 				ContextSnapshot snapshot = ContextSnapshotFactoryHelper.captureFrom(contextView);
 				try {
 					List<GraphQLError> errors = snapshot.wrap(() -> resolveToMultipleErrors(exception)).call();
@@ -107,7 +107,7 @@ public abstract class SubscriptionExceptionResolverAdapter implements Subscripti
 	@Nullable
 	protected List<GraphQLError> resolveToMultipleErrors(Throwable exception) {
 		GraphQLError error = resolveToSingleError(exception);
-		return (error != null) ? Collections.singletonList(error) : null;
+		return error != null ? Collections.singletonList(error) : null;
 	}
 
 	/**

@@ -87,7 +87,7 @@ public abstract class AbstractGraphQlTesterBuilder<B extends AbstractGraphQlTest
 
 	@Override
 	public B errorFilter(Predicate<ResponseError> predicate) {
-		this.errorFilter = (this.errorFilter != null) ? this.errorFilter.and(predicate) : predicate;
+		this.errorFilter = this.errorFilter != null ? this.errorFilter.and(predicate) : predicate;
 		return self();
 	}
 
@@ -142,12 +142,12 @@ public abstract class AbstractGraphQlTesterBuilder<B extends AbstractGraphQlTest
 	 * initialize new builder instances with, based on "this" builder.
 	 */
 	protected Consumer<AbstractGraphQlTesterBuilder<?>> getBuilderInitializer() {
-		return (builder) -> {
+		return builder -> {
 			if (this.errorFilter != null) {
 				builder.errorFilter(this.errorFilter);
 			}
 			builder.documentSource(this.documentSource);
-			builder.configureJsonPathConfig((config) -> this.jsonPathConfig);
+			builder.configureJsonPathConfig(config -> this.jsonPathConfig);
 			builder.responseTimeout(this.responseTimeout);
 		};
 	}
@@ -210,7 +210,7 @@ public abstract class AbstractGraphQlTesterBuilder<B extends AbstractGraphQlTest
 		}
 
 		private static <T> boolean isDefault(@Nullable T provider, Class<? extends T> defaultProviderType) {
-			return (provider == null || defaultProviderType.isInstance(provider));
+			return provider == null || defaultProviderType.isInstance(provider);
 		}
 
 	}

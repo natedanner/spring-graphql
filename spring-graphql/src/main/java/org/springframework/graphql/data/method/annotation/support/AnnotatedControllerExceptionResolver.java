@@ -100,7 +100,7 @@ final class AnnotatedControllerExceptionResolver implements HandlerDataFetcherEx
 	 */
 	void registerController(Class<?> controllerType) {
 		this.controllerCache.computeIfAbsent(
-				controllerType, (type) -> new MethodResolver(findExceptionHandlers(controllerType)));
+				controllerType, type -> new MethodResolver(findExceptionHandlers(controllerType)));
 	}
 
 	/**
@@ -122,7 +122,7 @@ final class AnnotatedControllerExceptionResolver implements HandlerDataFetcherEx
 			}
 		}
 		detectedControllerAdvice.keySet().stream().sorted(OrderComparator.INSTANCE)
-				.forEach((bean) -> this.controllerAdviceCache.put(bean, detectedControllerAdvice.get(bean)));
+				.forEach(bean -> this.controllerAdviceCache.put(bean, detectedControllerAdvice.get(bean)));
 		if (logger.isDebugEnabled()) {
 			logger.debug("@GraphQlException methods in ControllerAdvice beans: " +
 					(this.controllerAdviceCache.isEmpty() ? "none" : this.controllerAdviceCache.size()));
@@ -133,7 +133,7 @@ final class AnnotatedControllerExceptionResolver implements HandlerDataFetcherEx
 	private static Map<Class<? extends Throwable>, Method> findExceptionHandlers(Class<?> handlerType) {
 
 		Map<Method, GraphQlExceptionHandler> handlerMap = MethodIntrospector.selectMethods(
-				handlerType, (MethodIntrospector.MetadataLookup<GraphQlExceptionHandler>) (method) ->
+				handlerType, (MethodIntrospector.MetadataLookup<GraphQlExceptionHandler>) method ->
 						AnnotatedElementUtils.findMergedAnnotation(method, GraphQlExceptionHandler.class));
 
 		Map<Class<? extends Throwable>, Method> mappings = new HashMap<>(handlerMap.size());
@@ -229,7 +229,7 @@ final class AnnotatedControllerExceptionResolver implements HandlerDataFetcherEx
 			while (exToExpose != null) {
 				exceptions.add(exToExpose);
 				Throwable cause = exToExpose.getCause();
-				exToExpose = (cause != exToExpose) ? cause : null;
+				exToExpose = cause != exToExpose ? cause : null;
 			}
 			Object[] arguments = new Object[exceptions.size() + 1];
 			exceptions.toArray(arguments);  // efficient arraycopy call in ArrayList
@@ -295,7 +295,7 @@ final class AnnotatedControllerExceptionResolver implements HandlerDataFetcherEx
 				method = getMappedMethod(exceptionType);
 				this.resolvedExceptionCache.put(exceptionType, method);
 			}
-			return (method != NO_MATCH) ? method : null;
+			return method != NO_MATCH ? method : null;
 		}
 
 		private MethodHolder getMappedMethod(Class<? extends Throwable> exceptionType) {
@@ -425,14 +425,14 @@ final class AnnotatedControllerExceptionResolver implements HandlerDataFetcherEx
 
 		/* Adapter for a single GraphQLError */
 		ReturnValueAdapter forSingleError = (result, returnType, ex) ->
-				(result != null) ?
+				result != null ?
 						Mono.just(Collections.singletonList((GraphQLError) result)) :
 						Mono.empty();
 
 		/* Adapter for a collection of GraphQLError's */
 		ReturnValueAdapter forCollection = (result, returnType, ex) ->
-				(result != null) ?
-						Mono.just((result instanceof List) ?
+				result != null ?
+						Mono.just(result instanceof List ?
 								(List<GraphQLError>) result :
 								new ArrayList<>((Collection<GraphQLError>) result)) :
 						Mono.empty();
@@ -459,12 +459,12 @@ final class AnnotatedControllerExceptionResolver implements HandlerDataFetcherEx
 
 		/* Adapter for {@code Mono<Void>} */
 		ReturnValueAdapter forMonoVoid = (result, returnType, ex) ->
-				(result != null) ? Mono.just(Collections.emptyList()) : Mono.empty();
+				result != null ? Mono.just(Collections.emptyList()) : Mono.empty();
 
 		/* Adapter for a {@code Mono} wrapping any of the other synchronous return value types */
 		ReturnValueAdapter forMono = (result, returnType, ex) ->
-				(result != null) ?
-						((Mono<?>) result).flatMap((o) -> forObject.adapt(o, returnType, ex)).switchIfEmpty(Mono.error(ex)) :
+				result != null ?
+						((Mono<?>) result).flatMap(o -> forObject.adapt(o, returnType, ex)).switchIfEmpty(Mono.error(ex)) :
 						Mono.empty();
 	}
 

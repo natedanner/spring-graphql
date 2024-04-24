@@ -114,7 +114,7 @@ public final class DataFetcherMappingInfo {
 		if (!(other instanceof DataFetcherMappingInfo otherInfo)) {
 			return false;
 		}
-		return (this.coordinates.equals(otherInfo.coordinates));
+		return this.coordinates.equals(otherInfo.coordinates);
 	}
 
 	@Override

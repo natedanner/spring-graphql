@@ -90,13 +90,13 @@ public class GraphQlHttpHandler extends AbstractGraphQlHttpHandler {
 		}
 
 		CompletableFuture<ServerResponse> future = this.graphQlHandler.handleRequest(graphQlRequest)
-				.map((response) -> {
+				.map(response -> {
 					if (logger.isDebugEnabled()) {
 						logger.debug("Execution complete");
 					}
 					MediaType contentType = selectResponseMediaType(serverRequest);
 					ServerResponse.BodyBuilder builder = ServerResponse.ok();
-					builder.headers((headers) -> headers.putAll(response.getResponseHeaders()));
+					builder.headers(headers -> headers.putAll(response.getResponseHeaders()));
 					builder.contentType(contentType);
 
 					if (this.messageConverter != null) {

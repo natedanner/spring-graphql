@@ -53,7 +53,7 @@ final class HttpSyncGraphQlTransport implements SyncGraphQlTransport {
 		HttpHeaders headers = new HttpHeaders();
 		webClient.mutate().defaultHeaders(headers::putAll);
 		MediaType contentType = headers.getContentType();
-		return (contentType != null) ? contentType : MediaType.APPLICATION_JSON;
+		return contentType != null ? contentType : MediaType.APPLICATION_JSON;
 	}
 
 
@@ -67,7 +67,7 @@ final class HttpSyncGraphQlTransport implements SyncGraphQlTransport {
 				.retrieve()
 				.body(MAP_TYPE);
 
-		return new ResponseMapGraphQlResponse((body != null) ? body : Collections.emptyMap());
+		return new ResponseMapGraphQlResponse(body != null ? body : Collections.emptyMap());
 	}
 
 }

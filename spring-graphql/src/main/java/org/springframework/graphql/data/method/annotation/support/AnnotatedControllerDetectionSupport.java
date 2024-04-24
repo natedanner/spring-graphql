@@ -223,7 +223,7 @@ public abstract class AnnotatedControllerDetectionSupport<M> implements Applicat
 				continue;
 			}
 			Class<?> beanClass = context.getType(beanName);
-			findHandlerMethods(beanName, beanClass).forEach((info) -> registerHandlerMethod(info, results));
+			findHandlerMethods(beanName, beanClass).forEach(info -> registerHandlerMethod(info, results));
 		}
 		return results;
 	}
@@ -253,10 +253,10 @@ public abstract class AnnotatedControllerDetectionSupport<M> implements Applicat
 
 	private String formatMappings(Class<?> handlerType, Collection<M> infos) {
 		String formattedType = Arrays.stream(ClassUtils.getPackageName(handlerType).split("\\."))
-				.map((p) -> p.substring(0, 1))
+				.map(p -> p.substring(0, 1))
 				.collect(Collectors.joining(".", "", "." + handlerType.getSimpleName()));
 		return infos.stream()
-				.map((info) -> {
+				.map(info -> {
 					Method method = getHandlerMethod(info).getMethod();
 					String methodParameters = Arrays.stream(method.getGenericParameterTypes())
 							.map(Type::getTypeName)
@@ -269,7 +269,7 @@ public abstract class AnnotatedControllerDetectionSupport<M> implements Applicat
 	private void registerHandlerMethod(M info, Set<M> results) {
 		Assert.state(this.exceptionResolver != null, "afterPropertiesSet not called");
 		HandlerMethod handlerMethod = getHandlerMethod(info);
-		M existing = results.stream().filter((o) -> o.equals(info)).findFirst().orElse(null);
+		M existing = results.stream().filter(o -> o.equals(info)).findFirst().orElse(null);
 		if (existing != null && !getHandlerMethod(existing).equals(handlerMethod)) {
 			throw new IllegalStateException(
 					"Ambiguous mapping. Cannot map '" + handlerMethod.getBean() + "' method \n" +
@@ -282,7 +282,7 @@ public abstract class AnnotatedControllerDetectionSupport<M> implements Applicat
 
 	protected HandlerMethod createHandlerMethod(Method originalMethod, Object handler, Class<?> handlerType) {
 		Method method = AopUtils.selectInvocableMethod(originalMethod, handlerType);
-		return (handler instanceof String beanName) ?
+		return handler instanceof String beanName ?
 				new HandlerMethod(beanName, obtainApplicationContext().getAutowireCapableBeanFactory(), method) :
 				new HandlerMethod(handler, method);
 	}

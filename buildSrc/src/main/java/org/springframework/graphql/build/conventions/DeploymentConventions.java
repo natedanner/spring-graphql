@@ -30,10 +30,10 @@ public class DeploymentConventions {
 
 	public void apply(Project project) {
 		project.getPlugins().apply(MavenPublishPlugin.class);
-		project.getPlugins().withType(MavenPublishPlugin.class).forEach((mavenPublishPlugin) -> {
+		project.getPlugins().withType(MavenPublishPlugin.class).forEach(mavenPublishPlugin -> {
 			PublishingExtension publishing = project.getExtensions().getByType(PublishingExtension.class);
 			if (project.hasProperty("deploymentRepository")) {
-				publishing.getRepositories().maven((mavenArtifactRepository) -> {
+				publishing.getRepositories().maven(mavenArtifactRepository -> {
 					mavenArtifactRepository.setUrl(project.property("deploymentRepository"));
 					mavenArtifactRepository.setName("deployment");
 				});

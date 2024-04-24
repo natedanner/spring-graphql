@@ -423,8 +423,8 @@ public abstract class QueryByExampleDataFetcher<T> {
 		public Builder<T, R> defaultScrollSubrange(@Nullable ScrollSubrange defaultSubrange) {
 			return new Builder<>(this.executor, this.domainType,
 					this.resultType, this.cursorStrategy,
-					(defaultSubrange != null) ? defaultSubrange.count().getAsInt() : null,
-					(defaultSubrange != null) ? (forward) -> defaultSubrange.position().get() : null,
+					defaultSubrange != null ? defaultSubrange.count().getAsInt() : null,
+					defaultSubrange != null ? forward -> defaultSubrange.position().get() : null,
 					this.sort);
 		}
 
@@ -462,9 +462,9 @@ public abstract class QueryByExampleDataFetcher<T> {
 		public DataFetcher<Iterable<R>> scrollable() {
 			return new ScrollableEntityFetcher<>(
 					this.executor, this.domainType, this.resultType,
-					(this.cursorStrategy != null) ? this.cursorStrategy : RepositoryUtils.defaultCursorStrategy(),
-					(this.defaultScrollCount != null) ? this.defaultScrollCount : RepositoryUtils.defaultScrollCount(),
-					(this.defaultScrollPosition != null) ? this.defaultScrollPosition : RepositoryUtils.defaultScrollPosition(),
+					this.cursorStrategy != null ? this.cursorStrategy : RepositoryUtils.defaultCursorStrategy(),
+					this.defaultScrollCount != null ? this.defaultScrollCount : RepositoryUtils.defaultScrollCount(),
+					this.defaultScrollPosition != null ? this.defaultScrollPosition : RepositoryUtils.defaultScrollPosition(),
 					this.sort);
 		}
 
@@ -603,8 +603,8 @@ public abstract class QueryByExampleDataFetcher<T> {
 		public ReactiveBuilder<T, R> defaultScrollSubrange(@Nullable ScrollSubrange defaultSubrange) {
 			return new ReactiveBuilder<>(this.executor, this.domainType,
 					this.resultType, this.cursorStrategy,
-					(defaultSubrange != null) ? defaultSubrange.count().getAsInt() : null,
-					(defaultSubrange != null) ? (forward) -> defaultSubrange.position().get() : null,
+					defaultSubrange != null ? defaultSubrange.count().getAsInt() : null,
+					defaultSubrange != null ? forward -> defaultSubrange.position().get() : null,
 					this.sort);
 		}
 
@@ -642,9 +642,9 @@ public abstract class QueryByExampleDataFetcher<T> {
 		public DataFetcher<Mono<Iterable<R>>> scrollable() {
 			return new ReactiveScrollableEntityFetcher<>(
 					this.executor, this.domainType, this.resultType,
-					(this.cursorStrategy != null) ? this.cursorStrategy : RepositoryUtils.defaultCursorStrategy(),
-					(this.defaultScrollCount != null) ? this.defaultScrollCount : RepositoryUtils.defaultScrollCount(),
-					(this.defaultScrollPosition != null) ? this.defaultScrollPosition : RepositoryUtils.defaultScrollPosition(),
+					this.cursorStrategy != null ? this.cursorStrategy : RepositoryUtils.defaultCursorStrategy(),
+					this.defaultScrollCount != null ? this.defaultScrollCount : RepositoryUtils.defaultScrollCount(),
+					this.defaultScrollPosition != null ? this.defaultScrollPosition : RepositoryUtils.defaultScrollPosition(),
 					this.sort);
 		}
 
@@ -696,7 +696,7 @@ public abstract class QueryByExampleDataFetcher<T> {
 		@Override
 		@SuppressWarnings({"ConstantConditions", "unchecked"})
 		public R get(DataFetchingEnvironment env) throws BindException {
-			return this.executor.findBy(buildExample(env), (query) -> {
+			return this.executor.findBy(buildExample(env), query -> {
 				FluentQuery.FetchableFluentQuery<R> queryToUse = (FluentQuery.FetchableFluentQuery<R>) query;
 
 				if (this.sort.isSorted()) {
@@ -745,7 +745,7 @@ public abstract class QueryByExampleDataFetcher<T> {
 		@Override
 		@SuppressWarnings("unchecked")
 		public Iterable<R> get(DataFetchingEnvironment env) throws BindException {
-			return this.executor.findBy(buildExample(env), (query) -> {
+			return this.executor.findBy(buildExample(env), query -> {
 				FluentQuery.FetchableFluentQuery<R> queryToUse = (FluentQuery.FetchableFluentQuery<R>) query;
 
 				if (this.sort.isSorted()) {
@@ -807,8 +807,8 @@ public abstract class QueryByExampleDataFetcher<T> {
 		protected Iterable<R> getResult(FluentQuery.FetchableFluentQuery<R> queryToUse, DataFetchingEnvironment env) {
 			ScrollSubrange range = RepositoryUtils.getScrollSubrange(env, this.cursorStrategy);
 			int count = range.count().orElse(this.defaultCount);
-			ScrollPosition position = (range.position().isPresent() ?
-					range.position().get() : this.defaultPosition.apply(range.forward()));
+			ScrollPosition position = range.position().isPresent() ?
+					range.position().get() : this.defaultPosition.apply(range.forward());
 			return queryToUse.limit(count).scroll(position);
 		}
 
@@ -842,7 +842,7 @@ public abstract class QueryByExampleDataFetcher<T> {
 		@Override
 		@SuppressWarnings("unchecked")
 		public Mono<R> get(DataFetchingEnvironment env) throws BindException {
-			return this.executor.findBy(buildExample(env), (query) -> {
+			return this.executor.findBy(buildExample(env), query -> {
 				FluentQuery.ReactiveFluentQuery<R> queryToUse = (FluentQuery.ReactiveFluentQuery<R>) query;
 
 				if (this.sort.isSorted()) {
@@ -890,7 +890,7 @@ public abstract class QueryByExampleDataFetcher<T> {
 		@Override
 		@SuppressWarnings("unchecked")
 		public Flux<R> get(DataFetchingEnvironment env) throws BindException {
-			return this.executor.findBy(buildExample(env), (query) -> {
+			return this.executor.findBy(buildExample(env), query -> {
 				FluentQuery.ReactiveFluentQuery<R> queryToUse = (FluentQuery.ReactiveFluentQuery<R>) query;
 
 				if (this.sort.isSorted()) {
@@ -957,7 +957,7 @@ public abstract class QueryByExampleDataFetcher<T> {
 		@Override
 		@SuppressWarnings("unchecked")
 		public Mono<Iterable<R>> get(DataFetchingEnvironment env) throws BindException {
-			return this.executor.findBy(buildExample(env), (query) -> {
+			return this.executor.findBy(buildExample(env), query -> {
 				FluentQuery.ReactiveFluentQuery<R> queryToUse = (FluentQuery.ReactiveFluentQuery<R>) query;
 
 				if (this.sort.isSorted()) {
@@ -973,8 +973,8 @@ public abstract class QueryByExampleDataFetcher<T> {
 
 				ScrollSubrange range = RepositoryUtils.getScrollSubrange(env, this.cursorStrategy);
 				int count = range.count().orElse(this.defaultCount);
-				ScrollPosition position = (range.position().isPresent() ?
-						range.position().get() : this.defaultPosition.apply(range.forward()));
+				ScrollPosition position = range.position().isPresent() ?
+						range.position().get() : this.defaultPosition.apply(range.forward());
 				return queryToUse.limit(count).scroll(position).map(Function.identity());
 			});
 		}

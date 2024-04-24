@@ -80,7 +80,7 @@ public class BatchLoaderHandlerMethod extends InvocableHandlerMethodSupport {
 			Object result = doInvoke(environment.getContext(), args);
 			return toMonoMap(result);
 		}
-		return toArgsMono(args).flatMap((argValues) -> {
+		return toArgsMono(args).flatMap(argValues -> {
 			Object result = doInvoke(environment.getContext(), argValues);
 			return toMonoMap(result);
 		});
@@ -100,7 +100,7 @@ public class BatchLoaderHandlerMethod extends InvocableHandlerMethodSupport {
 			Object result = doInvoke(environment.getContext(), args);
 			return toFlux(result);
 		}
-		return toArgsMono(args).flatMapMany((resolvedArgs) -> {
+		return toArgsMono(args).flatMapMany(resolvedArgs -> {
 			Object result = doInvoke(environment.getContext(), resolvedArgs);
 			return toFlux(result);
 		});
@@ -163,7 +163,7 @@ public class BatchLoaderHandlerMethod extends InvocableHandlerMethodSupport {
 	}
 
 	private boolean doesNotHaveAsyncArgs(Object[] args) {
-		return Arrays.stream(args).noneMatch((arg) -> arg instanceof Mono);
+		return Arrays.stream(args).noneMatch(Mono.class::isInstance);
 	}
 
 	@SuppressWarnings("unchecked")

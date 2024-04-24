@@ -82,7 +82,7 @@ final class WebSocketGraphQlTransport implements GraphQlTransport {
 		Assert.notNull(interceptor, "WebSocketGraphQlClientInterceptor is required");
 
 		this.url = url;
-		this.headers.putAll((headers != null) ? headers : HttpHeaders.EMPTY);
+		this.headers.putAll(headers != null ? headers : HttpHeaders.EMPTY);
 		this.webSocketClient = client;
 		this.keepAlive = keepAlive;
 
@@ -105,7 +105,7 @@ final class WebSocketGraphQlTransport implements GraphQlTransport {
 			Mono<GraphQlSession> sessionMono = handler.getGraphQlSession();
 
 			client.execute(uri, headers, handler)
-					.subscribe((aVoid) -> {
+					.subscribe(aVoid -> {
 
 							},
 							handler::handleWebSocketSessionError,
@@ -154,17 +154,17 @@ final class WebSocketGraphQlTransport implements GraphQlTransport {
 	 */
 	Mono<Void> stop() {
 		this.graphQlSessionHandler.setStopped(true);
-		return this.graphQlSessionMono.flatMap(GraphQlSession::close).onErrorResume((ex) -> Mono.empty());
+		return this.graphQlSessionMono.flatMap(GraphQlSession::close).onErrorResume(ex -> Mono.empty());
 	}
 
 	@Override
 	public Mono<GraphQlResponse> execute(GraphQlRequest request) {
-		return this.graphQlSessionMono.flatMap((session) -> session.execute(request));
+		return this.graphQlSessionMono.flatMap(session -> session.execute(request));
 	}
 
 	@Override
 	public Flux<GraphQlResponse> executeSubscription(GraphQlRequest request) {
-		return this.graphQlSessionMono.flatMapMany((session) -> session.executeSubscription(request));
+		return this.graphQlSessionMono.flatMapMany(session -> session.executeSubscription(request));
 	}
 
 	@Nullable
@@ -260,10 +260,10 @@ final class WebSocketGraphQlTransport implements GraphQlTransport {
 
 			Mono<Void> sendCompletion =
 					session.send(connectionInitMono.concatWith(graphQlSession.getRequestFlux())
-							.map((message) -> this.codecDelegate.encode(session, message)));
+							.map(message -> this.codecDelegate.encode(session, message)));
 
 			Mono<Void> receiveCompletion = session.receive()
-					.flatMap((webSocketMessage) -> {
+					.flatMap(webSocketMessage -> {
 						if (sessionNotInitialized()) {
 							try {
 								GraphQlWebSocketMessage message = this.codecDelegate.decode(webSocketMessage);
@@ -309,18 +309,18 @@ final class WebSocketGraphQlTransport implements GraphQlTransport {
 						}
 						return Mono.empty();
 					})
-					.mergeWith((this.keepAlive != null) ?
+					.mergeWith(this.keepAlive != null ?
 							Flux.interval(this.keepAlive, this.keepAlive)
-									.filter((aLong) -> graphQlSession.checkSentOrReceivedMessagesAndClear())
-									.doOnNext((aLong) -> graphQlSession.sendPing())
+									.filter(aLong -> graphQlSession.checkSentOrReceivedMessagesAndClear())
+									.doOnNext(aLong -> graphQlSession.sendPing())
 									.then() :
 							Flux.empty())
 					.then();
 
 			if (this.keepAlive != null) {
 				Flux.interval(this.keepAlive, this.keepAlive)
-						.filter((aLong) -> graphQlSession.checkSentOrReceivedMessagesAndClear())
-						.doOnNext((aLong) -> graphQlSession.sendPing())
+						.filter(aLong -> graphQlSession.checkSentOrReceivedMessagesAndClear())
+						.doOnNext(aLong -> graphQlSession.sendPing())
 						.subscribe();
 			}
 
@@ -334,14 +334,14 @@ final class WebSocketGraphQlTransport implements GraphQlTransport {
 		private void registerCloseStatusHandling(GraphQlSession graphQlSession, WebSocketSession session) {
 			session.closeStatus()
 					.defaultIfEmpty(CloseStatus.NO_STATUS_CODE)
-					.doOnNext((closeStatus) -> {
+					.doOnNext(closeStatus -> {
 						String closeStatusMessage = initCloseStatusMessage(closeStatus, null, graphQlSession);
 						if (logger.isDebugEnabled()) {
 							logger.debug(closeStatusMessage);
 						}
 						graphQlSession.terminateRequests(closeStatusMessage, closeStatus);
 					})
-					.doOnError((cause) -> {
+					.doOnError(cause -> {
 						CloseStatus closeStatus = CloseStatus.NO_STATUS_CODE;
 						String closeStatusMessage = initCloseStatusMessage(closeStatus, cause, graphQlSession);
 						if (logger.isErrorEnabled()) {
@@ -440,7 +440,7 @@ final class WebSocketGraphQlTransport implements GraphQlTransport {
 
 		Mono<GraphQlResponse> execute(GraphQlRequest request) {
 			String id = String.valueOf(this.requestIndex.incrementAndGet());
-			return Mono.<GraphQlResponse>create((sink) -> {
+			return Mono.<GraphQlResponse>create(sink -> {
 				SingleResponseRequestState state = new SingleResponseRequestState(request, sink);
 				this.requestStateMap.put(id, state);
 				try {
@@ -456,7 +456,7 @@ final class WebSocketGraphQlTransport implements GraphQlTransport {
 
 		Flux<GraphQlResponse> executeSubscription(GraphQlRequest request) {
 			String id = String.valueOf(this.requestIndex.incrementAndGet());
-			return Flux.<GraphQlResponse>create((sink) -> {
+			return Flux.<GraphQlResponse>create(sink -> {
 				SubscriptionRequestState state = new SubscriptionRequestState(request, sink);
 				this.requestStateMap.put(id, state);
 				try {
@@ -500,7 +500,7 @@ final class WebSocketGraphQlTransport implements GraphQlTransport {
 		boolean checkSentOrReceivedMessagesAndClear() {
 			boolean received = this.hasReceivedMessages;
 			this.hasReceivedMessages = false;
-			return (this.requestSink.checkSentMessagesAndClear() || received);
+			return this.requestSink.checkSentMessagesAndClear() || received;
 		}
 
 		// Inbound messages
@@ -590,7 +590,7 @@ final class WebSocketGraphQlTransport implements GraphQlTransport {
 		 * Terminate and clean all in-progress requests with the given error.
 		 */
 		void terminateRequests(String message, CloseStatus status) {
-			this.requestStateMap.values().forEach((info) -> info.emitDisconnectError(message, status));
+			this.requestStateMap.values().forEach(info -> info.emitDisconnectError(message, status));
 			this.requestStateMap.clear();
 		}
 
@@ -649,7 +649,7 @@ final class WebSocketGraphQlTransport implements GraphQlTransport {
 
 		private boolean hasSentMessages;
 
-		private final Flux<GraphQlWebSocketMessage> requestFlux = Flux.create((sink) -> {
+		private final Flux<GraphQlWebSocketMessage> requestFlux = Flux.create(sink -> {
 			Assert.state(this.requestSink == null, "Expected single subscriber only for outbound messages");
 			this.requestSink = sink;
 		});

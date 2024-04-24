@@ -148,17 +148,17 @@ public class GraphQlWebSocketHandler implements WebSocketHandler {
 				.subscribe();
 
 		session.closeStatus()
-				.doOnSuccess((closeStatus) -> {
+				.doOnSuccess(closeStatus -> {
 					Map<String, Object> connectionInitPayload = connectionInitPayloadRef.get();
 					if (connectionInitPayload == null) {
 						return;
 					}
-					int statusCode = (closeStatus != null) ? closeStatus.getCode() : 1005;
+					int statusCode = closeStatus != null ? closeStatus.getCode() : 1005;
 					this.webSocketInterceptor.handleConnectionClosed(sessionInfo, statusCode, connectionInitPayload);
 				})
 				.subscribe();
 
-		return session.send(session.receive().flatMap((webSocketMessage) -> {
+		return session.send(session.receive().flatMap(webSocketMessage -> {
 			GraphQlWebSocketMessage message = this.codecDelegate.decode(webSocketMessage);
 			String id = message.getId();
 			Map<String, Object> payload = message.getPayload();
@@ -178,7 +178,7 @@ public class GraphQlWebSocketHandler implements WebSocketHandler {
 						logger.debug("Executing: " + request);
 					}
 					return this.graphQlHandler.handleRequest(request)
-							.flatMapMany((response) -> handleResponse(session, id, subscriptions, response))
+							.flatMapMany(response -> handleResponse(session, id, subscriptions, response))
 							.doOnTerminate(() -> subscriptions.remove(id));
 				}
 				case PING -> {
@@ -204,14 +204,14 @@ public class GraphQlWebSocketHandler implements WebSocketHandler {
 					}
 					Flux<WebSocketMessage> flux = this.webSocketInterceptor.handleConnectionInitialization(sessionInfo, payload)
 							.defaultIfEmpty(Collections.emptyMap())
-							.map((ackPayload) -> this.codecDelegate.encodeConnectionAck(session, ackPayload))
+							.map(ackPayload -> this.codecDelegate.encodeConnectionAck(session, ackPayload))
 							.flux();
 					if (this.keepAliveDuration != null) {
 						flux = flux.mergeWith(Flux.interval(this.keepAliveDuration, this.keepAliveDuration)
-								.filter((aLong) -> !this.codecDelegate.checkMessagesEncodedAndClear())
-								.map((aLong) -> this.codecDelegate.encode(session, GraphQlWebSocketMessage.ping(null))));
+								.filter(aLong -> !this.codecDelegate.checkMessagesEncodedAndClear())
+								.map(aLong -> this.codecDelegate.encode(session, GraphQlWebSocketMessage.ping(null))));
 					}
-					return flux.onErrorResume((ex) -> GraphQlStatus.close(session, GraphQlStatus.UNAUTHORIZED_STATUS));
+					return flux.onErrorResume(ex -> GraphQlStatus.close(session, GraphQlStatus.UNAUTHORIZED_STATUS));
 				}
 				default -> {
 					return GraphQlStatus.close(session, GraphQlStatus.INVALID_MESSAGE_STATUS);
@@ -227,7 +227,7 @@ public class GraphQlWebSocketHandler implements WebSocketHandler {
 
 		if (logger.isDebugEnabled()) {
 			logger.debug("Execution result ready"
-					+ (!CollectionUtils.isEmpty(response.getErrors()) ? " with errors: " + response.getErrors() : "")
+					+ (CollectionUtils.isEmpty(response.getErrors()) ? "" : " with errors: " + response.getErrors())
 					+ ".");
 		}
 
@@ -236,7 +236,7 @@ public class GraphQlWebSocketHandler implements WebSocketHandler {
 			// Subscription
 			responseFlux = Flux.from((Publisher<ExecutionResult>) response.getData())
 					.map(ExecutionResult::toSpecification)
-					.doOnSubscribe((subscription) -> {
+					.doOnSubscribe(subscription -> {
 							Subscription previous = subscriptions.putIfAbsent(id, subscription);
 							if (previous != null) {
 								throw new SubscriptionExistsException();
@@ -249,9 +249,9 @@ public class GraphQlWebSocketHandler implements WebSocketHandler {
 		}
 
 		return responseFlux
-				.map((responseMap) -> this.codecDelegate.encodeNext(session, id, responseMap))
+				.map(responseMap -> this.codecDelegate.encodeNext(session, id, responseMap))
 				.concatWith(Mono.fromCallable(() -> this.codecDelegate.encodeComplete(session, id)))
-				.onErrorResume((ex) -> {
+				.onErrorResume(ex -> {
 					if (ex instanceof SubscriptionExistsException) {
 						CloseStatus status = new CloseStatus(4409, "Subscriber for " + id + " already exists");
 						return GraphQlStatus.close(session, status);

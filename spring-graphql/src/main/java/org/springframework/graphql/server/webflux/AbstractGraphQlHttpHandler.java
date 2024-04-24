@@ -57,7 +57,7 @@ class AbstractGraphQlHttpHandler {
 			return serverRequest.bodyToMono(SerializableGraphQlRequest.class)
 					.onErrorResume(
 							UnsupportedMediaTypeStatusException.class,
-							(ex) -> applyApplicationGraphQlFallback(ex, serverRequest));
+							ex -> applyApplicationGraphQlFallback(ex, serverRequest));
 		}
 	}
 
@@ -67,7 +67,7 @@ class AbstractGraphQlHttpHandler {
 		// Spec requires application/json but some clients still use application/graphql
 		return "application/graphql".equals(request.headers().firstHeader(HttpHeaders.CONTENT_TYPE)) ?
 				ServerRequest.from(request)
-						.headers((headers) -> headers.setContentType(MediaType.APPLICATION_JSON))
+						.headers(headers -> headers.setContentType(MediaType.APPLICATION_JSON))
 						.body(request.bodyToFlux(DataBuffer.class))
 						.build()
 						.bodyToMono(SerializableGraphQlRequest.class)

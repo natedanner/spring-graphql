@@ -55,27 +55,24 @@ class DefaultDataFetcherObservationConventionTests {
 
 	@Test
 	void contextualNameContainsFieldName() {
-		DataFetchingEnvironment environment = createDataFetchingEnvironment(builder -> {
-			builder.mergedField(MergedField.newMergedField(Field.newField("project").build()).build());
-		});
+		DataFetchingEnvironment environment = createDataFetchingEnvironment(builder ->
+			builder.mergedField(MergedField.newMergedField(Field.newField("project").build()).build()));
 		DataFetcherObservationContext context = new DataFetcherObservationContext(environment);
 		assertThat(this.convention.getContextualName(context)).isEqualTo("graphql field project");
 	}
 
 	@Test
 	void fieldNameKeyValueIsPresent() {
-		DataFetchingEnvironment environment = createDataFetchingEnvironment(builder -> {
-			builder.mergedField(MergedField.newMergedField(Field.newField("project").build()).build());
-		});
+		DataFetchingEnvironment environment = createDataFetchingEnvironment(builder ->
+			builder.mergedField(MergedField.newMergedField(Field.newField("project").build()).build()));
 		DataFetcherObservationContext context = new DataFetcherObservationContext(environment);
 		assertThat(this.convention.getLowCardinalityKeyValues(context)).contains(KeyValue.of("graphql.field.name", "project"));
 	}
 
 	@Test
 	void errorTypeKeyValueIsPresent() {
-		DataFetchingEnvironment environment = createDataFetchingEnvironment(builder -> {
-			builder.mergedField(MergedField.newMergedField(Field.newField("project").build()).build());
-		});
+		DataFetchingEnvironment environment = createDataFetchingEnvironment(builder ->
+			builder.mergedField(MergedField.newMergedField(Field.newField("project").build()).build()));
 		DataFetcherObservationContext context = new DataFetcherObservationContext(environment);
 		context.setError(new IllegalStateException("custom data fetching failure"));
 		assertThat(this.convention.getLowCardinalityKeyValues(context)).contains(KeyValue.of("graphql.error.type", "IllegalStateException"));
@@ -83,11 +80,10 @@ class DefaultDataFetcherObservationConventionTests {
 
 	@Test
 	void fieldPathKeyValueIsPresent() {
-		DataFetchingEnvironment environment = createDataFetchingEnvironment(builder -> {
+		DataFetchingEnvironment environment = createDataFetchingEnvironment(builder ->
 			builder.mergedField(MergedField.newMergedField(Field.newField("project").build()).build())
 					.executionStepInfo(ExecutionStepInfo.newExecutionStepInfo().type(new GraphQLObjectType.Builder().name("project").build())
-							.path(ResultPath.parse("/projectBySlug/releases")).build());
-		});
+							.path(ResultPath.parse("/projectBySlug/releases")).build()));
 		DataFetcherObservationContext context = new DataFetcherObservationContext(environment);
 		context.setError(new IllegalStateException("custom data fetching failure"));
 		assertThat(this.convention.getHighCardinalityKeyValues(context)).contains(KeyValue.of("graphql.field.path", "/projectBySlug/releases"));

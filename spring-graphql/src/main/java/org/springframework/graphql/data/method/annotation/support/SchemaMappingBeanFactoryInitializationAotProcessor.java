@@ -92,8 +92,8 @@ class SchemaMappingBeanFactoryInitializationAotProcessor implements BeanFactoryI
 		List<Class<?>> controllers = new ArrayList<>();
 		List<Class<?>> controllerAdvices = new ArrayList<>();
 		Arrays.stream(beanFactory.getBeanDefinitionNames())
-				.map((beanName) -> RegisteredBean.of(beanFactory, beanName).getBeanClass())
-				.forEach((beanClass) -> {
+				.map(beanName -> RegisteredBean.of(beanFactory, beanName).getBeanClass())
+				.forEach(beanClass -> {
 					if (isController(beanClass)) {
 						controllers.add(beanClass);
 					}
@@ -139,19 +139,19 @@ class SchemaMappingBeanFactoryInitializationAotProcessor implements BeanFactoryI
 		public void applyTo(GenerationContext context, BeanFactoryInitializationCode initializationCode) {
 			RuntimeHints runtimeHints = context.getRuntimeHints();
 			registerSpringDataSpelSupport(runtimeHints);
-			this.controllers.forEach((controller) -> {
+			this.controllers.forEach(controller -> {
 				runtimeHints.reflection().registerType(controller, MemberCategory.INTROSPECT_DECLARED_METHODS);
 				ReflectionUtils.doWithMethods(controller,
-						(method) -> processSchemaMappingMethod(runtimeHints, method),
+						method -> processSchemaMappingMethod(runtimeHints, method),
 						this::isGraphQlHandlerMethod);
 				ReflectionUtils.doWithMethods(controller,
-						(method) -> processExceptionHandlerMethod(runtimeHints, method),
+						method -> processExceptionHandlerMethod(runtimeHints, method),
 						this::isExceptionHandlerMethod);
 			});
-			this.controllerAdvices.forEach((controllerAdvice) -> {
+			this.controllerAdvices.forEach(controllerAdvice -> {
 				runtimeHints.reflection().registerType(controllerAdvice, MemberCategory.INTROSPECT_DECLARED_METHODS);
 				ReflectionUtils.doWithMethods(controllerAdvice,
-						(method) -> processExceptionHandlerMethod(runtimeHints, method),
+						method -> processExceptionHandlerMethod(runtimeHints, method),
 						this::isExceptionHandlerMethod);
 			});
 		}
@@ -161,7 +161,7 @@ class SchemaMappingBeanFactoryInitializationAotProcessor implements BeanFactoryI
 				runtimeHints.reflection()
 						.registerType(SpelAwareProxyProjectionFactory.class)
 						.registerType(TypeReference.of("org.springframework.data.projection.SpelEvaluatingMethodInterceptor$TargetWrapper"),
-								(builder) -> builder.withMembers(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS,
+								builder -> builder.withMembers(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS,
 										MemberCategory.INVOKE_DECLARED_METHODS, MemberCategory.INVOKE_PUBLIC_METHODS));
 			}
 		}

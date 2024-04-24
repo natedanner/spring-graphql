@@ -104,7 +104,7 @@ final class DefaultSyncHttpGraphQlClientBuilder
 	@Override
 	public HttpSyncGraphQlClient build() {
 
-		this.restClientBuilder.messageConverters((converters) -> {
+		this.restClientBuilder.messageConverters(converters -> {
 			HttpMessageConverter<Object> converter = HttpMessageConverterDelegate.findJsonConverter(converters);
 			setJsonConverter(converter);
 		});

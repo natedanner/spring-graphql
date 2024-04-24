@@ -63,7 +63,7 @@ class DefaultWebGraphQlHandlerBuilder implements WebGraphQlHandler.Builder {
 	@Override
 	public WebGraphQlHandler.Builder interceptors(List<WebGraphQlInterceptor> interceptors) {
 		this.interceptors.addAll(interceptors);
-		interceptors.forEach((interceptor) -> {
+		interceptors.forEach(interceptor -> {
 			if (interceptor instanceof WebSocketGraphQlInterceptor) {
 				Assert.isNull(this.webSocketInterceptor, "There can be at most 1 WebSocketInterceptor");
 				this.webSocketInterceptor = (WebSocketGraphQlInterceptor) interceptor;
@@ -83,18 +83,18 @@ class DefaultWebGraphQlHandlerBuilder implements WebGraphQlHandler.Builder {
 
 		ContextSnapshotFactory snapshotFactory = ContextSnapshotFactoryHelper.selectInstance(this.snapshotFactory);
 
-		Chain endOfChain = (request) -> this.service.execute(request).map(WebGraphQlResponse::new);
+		Chain endOfChain = request -> this.service.execute(request).map(WebGraphQlResponse::new);
 
 		Chain executionChain = this.interceptors.stream()
 				.reduce(WebGraphQlInterceptor::andThen)
-				.map((interceptor) -> interceptor.apply(endOfChain))
+				.map(interceptor -> interceptor.apply(endOfChain))
 				.orElse(endOfChain);
 
 		return new WebGraphQlHandler() {
 
 			@Override
 			public WebSocketGraphQlInterceptor getWebSocketInterceptor() {
-				return (DefaultWebGraphQlHandlerBuilder.this.webSocketInterceptor != null) ?
+				return DefaultWebGraphQlHandlerBuilder.this.webSocketInterceptor != null ?
 						DefaultWebGraphQlHandlerBuilder.this.webSocketInterceptor : new WebSocketGraphQlInterceptor() { };
 			}
 
@@ -106,7 +106,7 @@ class DefaultWebGraphQlHandlerBuilder implements WebGraphQlHandler.Builder {
 			@Override
 			public Mono<WebGraphQlResponse> handleRequest(WebGraphQlRequest request) {
 				ContextSnapshot snapshot = snapshotFactory.captureAll();
-				return executionChain.next(request).contextWrite((context) -> {
+				return executionChain.next(request).contextWrite(context -> {
 					context = ContextSnapshotFactoryHelper.saveInstance(snapshotFactory, context);
 					return snapshot.updateContext(context);
 				});

@@ -80,8 +80,8 @@ final class RepositoryUtils {
 			return null;
 		}
 
-		return (StringUtils.hasText(annotation.typeName()) ?
-				annotation.typeName() : RepositoryUtils.getDomainType(repository).getSimpleName());
+		return StringUtils.hasText(annotation.typeName()) ?
+				annotation.typeName() : RepositoryUtils.getDomainType(repository).getSimpleName();
 	}
 
 
@@ -94,7 +94,7 @@ final class RepositoryUtils {
 	}
 
 	static Function<Boolean, ScrollPosition> defaultScrollPosition() {
-		return (forward) -> ScrollPosition.offset();
+		return forward -> ScrollPosition.offset();
 	}
 
 	static ScrollSubrange getScrollSubrange(
@@ -110,7 +110,7 @@ final class RepositoryUtils {
 				forward = false;
 			}
 		}
-		ScrollPosition pos = (cursor != null) ? cursorStrategy.fromCursor(cursor) : null;
+		ScrollPosition pos = cursor != null ? cursorStrategy.fromCursor(cursor) : null;
 		return ScrollSubrange.create(pos, count, forward);
 	}
 

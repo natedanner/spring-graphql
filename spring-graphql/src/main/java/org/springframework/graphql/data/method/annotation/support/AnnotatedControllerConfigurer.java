@@ -247,12 +247,12 @@ public class AnnotatedControllerConfigurer
 		Set<DataFetcherMappingInfo> allInfos = detectHandlerMethods();
 		Set<DataFetcherMappingInfo> subTypeInfos = this.interfaceMappingHelper.removeInterfaceMappings(allInfos);
 
-		allInfos.forEach((info) -> registerDataFetcher(info, runtimeWiringBuilder));
+		allInfos.forEach(info -> registerDataFetcher(info, runtimeWiringBuilder));
 
 		RuntimeWiring wiring = runtimeWiringBuilder.build();
 		subTypeInfos = this.interfaceMappingHelper.filterExistingMappings(subTypeInfos, wiring.getDataFetchers());
 
-		subTypeInfos.forEach((info) -> registerDataFetcher(info, runtimeWiringBuilder));
+		subTypeInfos.forEach(info -> registerDataFetcher(info, runtimeWiringBuilder));
 	}
 
 	@Override
@@ -278,12 +278,12 @@ public class AnnotatedControllerConfigurer
 		Annotation annotation = annotations.iterator().next();
 		if (annotation instanceof SchemaMapping mapping) {
 			typeName = mapping.typeName();
-			field = (StringUtils.hasText(mapping.field()) ? mapping.field() : method.getName());
+			field = StringUtils.hasText(mapping.field()) ? mapping.field() : method.getName();
 		}
 		else {
 			BatchMapping mapping = (BatchMapping) annotation;
 			typeName = mapping.typeName();
-			field = (StringUtils.hasText(mapping.field()) ? mapping.field() : method.getName());
+			field = StringUtils.hasText(mapping.field()) ? mapping.field() : method.getName();
 			batchMapping = true;
 			batchSize = mapping.maxBatchSize();
 		}
@@ -335,7 +335,7 @@ public class AnnotatedControllerConfigurer
 			dataFetcher = registerBatchLoader(info);
 		}
 		FieldCoordinates coordinates = info.getCoordinates();
-		runtimeWiringBuilder.type(coordinates.getTypeName(), (typeBuilder) ->
+		runtimeWiringBuilder.type(coordinates.getTypeName(), typeBuilder ->
 				typeBuilder.dataFetcher(coordinates.getFieldName(), dataFetcher));
 	}
 
@@ -348,7 +348,7 @@ public class AnnotatedControllerConfigurer
 		BatchLoaderRegistry registry = obtainApplicationContext().getBean(BatchLoaderRegistry.class);
 		BatchLoaderRegistry.RegistrationSpec<Object, Object> registration = registry.forName(dataLoaderKey);
 		if (info.getMaxBatchSize() > 0) {
-			registration.withOptions((options) -> options.setMaxBatchSize(info.getMaxBatchSize()));
+			registration.withOptions(options -> options.setMaxBatchSize(info.getMaxBatchSize()));
 		}
 
 		HandlerMethod handlerMethod = info.getHandlerMethod();
@@ -435,12 +435,12 @@ public class AnnotatedControllerConfigurer
 			this.argumentResolvers = argumentResolvers;
 
 			this.methodValidationHelper =
-					(helper != null) ? helper.getValidationHelperFor(info.getHandlerMethod()) : null;
+					helper != null ? helper.getValidationHelperFor(info.getHandlerMethod()) : null;
 
 			this.exceptionResolver = exceptionResolver;
 
 			this.executor = executor;
-			this.subscription = this.mappingInfo.getCoordinates().getTypeName().equalsIgnoreCase("Subscription");
+			this.subscription = "Subscription".equalsIgnoreCase(this.mappingInfo.getCoordinates().getTypeName());
 		}
 
 		@Override
@@ -456,12 +456,12 @@ public class AnnotatedControllerConfigurer
 		@Override
 		public Map<String, ResolvableType> getArguments() {
 
-			Predicate<MethodParameter> argumentPredicate = (p) ->
+			Predicate<MethodParameter> argumentPredicate = p ->
 					(p.getParameterAnnotation(Argument.class) != null || p.getParameterType() == ArgumentValue.class);
 
 			return Arrays.stream(this.mappingInfo.getHandlerMethod().getMethodParameters())
 					.filter(argumentPredicate)
-					.peek((p) -> p.initParameterNameDiscovery(parameterNameDiscoverer))
+					.peek(p -> p.initParameterNameDiscovery(parameterNameDiscoverer))
 					.collect(Collectors.toMap(
 							ArgumentMethodArgumentResolver::getArgumentName,
 							ResolvableType::forMethodParameter));
@@ -496,13 +496,13 @@ public class AnnotatedControllerConfigurer
 				DataFetchingEnvironment env, DataFetcherHandlerMethod handlerMethod, Object result) {
 
 			if (this.subscription && result instanceof Publisher<?> publisher) {
-				result = Flux.from(publisher).onErrorResume((ex) -> handleSubscriptionError(ex, env, handlerMethod));
+				result = Flux.from(publisher).onErrorResume(ex -> handleSubscriptionError(ex, env, handlerMethod));
 			}
 			else if (result instanceof Mono) {
-				result = ((Mono<T>) result).onErrorResume((ex) -> (Mono<T>) handleException(ex, env, handlerMethod));
+				result = ((Mono<T>) result).onErrorResume(ex -> (Mono<T>) handleException(ex, env, handlerMethod));
 			}
 			else if (result instanceof Flux<?>) {
-				result = ((Flux<T>) result).onErrorResume((ex) -> (Mono<T>) handleException(ex, env, handlerMethod));
+				result = ((Flux<T>) result).onErrorResume(ex -> (Mono<T>) handleException(ex, env, handlerMethod));
 			}
 			return result;
 		}
@@ -511,7 +511,7 @@ public class AnnotatedControllerConfigurer
 				Throwable ex, DataFetchingEnvironment env, DataFetcherHandlerMethod handlerMethod) {
 
 			return this.exceptionResolver.resolveException(ex, env, handlerMethod.getBean())
-					.map((errors) -> DataFetcherResult.newResult().errors(errors).build())
+					.map(errors -> DataFetcherResult.newResult().errors(errors).build())
 					.switchIfEmpty(Mono.error(ex));
 		}
 
@@ -520,7 +520,7 @@ public class AnnotatedControllerConfigurer
 				Throwable ex, DataFetchingEnvironment env, DataFetcherHandlerMethod handlerMethod) {
 
 			return (Publisher<T>) this.exceptionResolver.resolveException(ex, env, handlerMethod.getBean())
-					.flatMap((errors) -> Mono.error(new SubscriptionPublisherException(errors, ex)))
+					.flatMap(errors -> Mono.error(new SubscriptionPublisherException(errors, ex)))
 					.switchIfEmpty(Mono.error(ex));
 		}
 
@@ -606,9 +606,9 @@ public class AnnotatedControllerConfigurer
 				Set<DataFetcherMappingInfo> infos, Map<String, Map<String, DataFetcher>> dataFetchers) {
 
 			return infos.stream()
-					.filter((info) -> {
+					.filter(info -> {
 						Map<String, DataFetcher> registrations = dataFetchers.get(info.getTypeName());
-						return (registrations == null || !registrations.containsKey(info.getFieldName()));
+						return registrations == null || !registrations.containsKey(info.getFieldName());
 					})
 					.collect(Collectors.toSet());
 		}

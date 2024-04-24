@@ -65,11 +65,11 @@ class ExceptionResolversExceptionHandler implements DataFetcherExceptionHandler 
 		ContextSnapshot snapshot = ContextSnapshotFactoryHelper.captureFrom(env.getGraphQlContext());
 		try {
 			return Flux.fromIterable(this.resolvers)
-					.flatMap((resolver) -> resolver.resolveException(exception, env))
-					.map((errors) -> DataFetcherExceptionHandlerResult.newResult().errors(errors).build())
+					.flatMap(resolver -> resolver.resolveException(exception, env))
+					.map(errors -> DataFetcherExceptionHandlerResult.newResult().errors(errors).build())
 					.next()
-					.doOnNext((result) -> logResolvedException(exception, result))
-					.onErrorResume((resolverEx) -> Mono.just(handleResolverError(resolverEx, exception, env)))
+					.doOnNext(result -> logResolvedException(exception, result))
+					.onErrorResume(resolverEx -> Mono.just(handleResolverError(resolverEx, exception, env)))
 					.switchIfEmpty(Mono.fromCallable(() -> createInternalError(exception, env)))
 					.contextWrite(snapshot::updateContext)
 					.toFuture();
@@ -90,7 +90,7 @@ class ExceptionResolversExceptionHandler implements DataFetcherExceptionHandler 
 
 	private Throwable unwrapException(DataFetcherExceptionHandlerParameters params) {
 		Throwable ex = params.getException();
-		return ((ex instanceof CompletionException) ? ex.getCause() : ex);
+		return ex instanceof CompletionException ? ex.getCause() : ex;
 	}
 
 	private void logResolvedException(Throwable ex, DataFetcherExceptionHandlerResult result) {

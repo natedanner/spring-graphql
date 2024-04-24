@@ -67,7 +67,7 @@ abstract class AbstractGraphQlHttpHandler {
 	protected static MultiValueMap<String, HttpCookie> initCookies(ServerRequest serverRequest) {
 		MultiValueMap<String, Cookie> source = serverRequest.cookies();
 		MultiValueMap<String, HttpCookie> target = new LinkedMultiValueMap<>(source.size());
-		source.values().forEach((cookieList) -> cookieList.forEach((cookie) -> {
+		source.values().forEach(cookieList -> cookieList.forEach(cookie -> {
 			HttpCookie httpCookie = new HttpCookie(cookie.getName(), cookie.getValue());
 			target.add(cookie.getName(), httpCookie);
 		}));
@@ -106,7 +106,7 @@ abstract class AbstractGraphQlHttpHandler {
 		if ("application/graphql".equals(request.headers().firstHeader(HttpHeaders.CONTENT_TYPE))) {
 			try {
 				request = ServerRequest.from(request)
-						.headers((headers) -> headers.setContentType(MediaType.APPLICATION_JSON))
+						.headers(headers -> headers.setContentType(MediaType.APPLICATION_JSON))
 						.body(request.body(byte[].class))
 						.build();
 				return request.body(SerializableGraphQlRequest.class);

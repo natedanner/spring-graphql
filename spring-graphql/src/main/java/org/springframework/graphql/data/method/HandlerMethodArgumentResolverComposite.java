@@ -64,7 +64,7 @@ public class HandlerMethodArgumentResolverComposite implements HandlerMethodArgu
 	 */
 	@Override
 	public boolean supportsParameter(MethodParameter parameter) {
-		return (getArgumentResolver(parameter) != null);
+		return getArgumentResolver(parameter) != null;
 	}
 
 	/**
@@ -90,7 +90,7 @@ public class HandlerMethodArgumentResolverComposite implements HandlerMethodArgu
 	 */
 	@Nullable
 	public HandlerMethodArgumentResolver getArgumentResolver(MethodParameter parameter) {
-		return this.argumentResolverCache.computeIfAbsent(parameter, (p) -> {
+		return this.argumentResolverCache.computeIfAbsent(parameter, p -> {
 			for (HandlerMethodArgumentResolver resolver : this.argumentResolvers) {
 				if (resolver.supportsParameter(parameter)) {
 					return resolver;

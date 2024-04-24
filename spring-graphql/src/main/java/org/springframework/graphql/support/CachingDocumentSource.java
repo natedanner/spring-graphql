@@ -68,9 +68,9 @@ public class CachingDocumentSource implements DocumentSource {
 
 	@Override
 	public Mono<String> getDocument(String name) {
-		return ((isCacheEnabled()) ?
-				this.documentCache.computeIfAbsent(name, (k) -> this.delegate.getDocument(name).cache()) :
-				this.delegate.getDocument(name));
+		return isCacheEnabled() ?
+				this.documentCache.computeIfAbsent(name, k -> this.delegate.getDocument(name).cache()) :
+				this.delegate.getDocument(name);
 	}
 
 	/**

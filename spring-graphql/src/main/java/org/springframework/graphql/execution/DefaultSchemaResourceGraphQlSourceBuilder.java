@@ -79,7 +79,7 @@ final class DefaultSchemaResourceGraphQlSourceBuilder
 	@Nullable
 	private Consumer<SchemaReport> schemaReportConsumer;
 
-	private Consumer<SchemaMappingInspector.Initializer> inspectorInitializerConsumer = (initializer) -> { };
+	private Consumer<SchemaMappingInspector.Initializer> inspectorInitializerConsumer = initializer -> { };
 
 	@Nullable
 	private Consumer<GraphQLSchema> schemaReportRunner;
@@ -156,7 +156,7 @@ final class DefaultSchemaResourceGraphQlSourceBuilder
 		updateForCustomRootOperationTypeNames(registry, runtimeWiring);
 
 		TypeResolver typeResolver = initTypeResolver();
-		registry.types().values().forEach((def) -> {
+		registry.types().values().forEach(def -> {
 			if (def instanceof UnionTypeDefinition || def instanceof InterfaceTypeDefinition) {
 				runtimeWiring.getTypeResolvers().putIfAbsent(def.getName(), typeResolver);
 			}
@@ -166,7 +166,7 @@ final class DefaultSchemaResourceGraphQlSourceBuilder
 		// visitors may transform the schema, for example to add Connection types.
 
 		if (this.schemaReportConsumer != null) {
-			this.schemaReportRunner = (schema) -> {
+			this.schemaReportRunner = schema -> {
 				SchemaMappingInspector.Initializer initializer = SchemaMappingInspector.initializer();
 				if (this.typeResolver instanceof ClassNameTypeResolver cntr) {
 					initializer.classResolver(SchemaMappingInspector.ClassResolver.fromClassNameTypeResolver(cntr));
@@ -177,7 +177,7 @@ final class DefaultSchemaResourceGraphQlSourceBuilder
 			};
 		}
 
-		return (this.schemaFactory != null) ?
+		return this.schemaFactory != null ?
 				this.schemaFactory.apply(registry, runtimeWiring) :
 				new SchemaGenerator().makeExecutableSchema(registry, runtimeWiring);
 	}
@@ -200,7 +200,7 @@ final class DefaultSchemaResourceGraphQlSourceBuilder
 
 	private RuntimeWiring initRuntimeWiring(TypeDefinitionRegistry typeRegistry) {
 		RuntimeWiring.Builder builder = RuntimeWiring.newRuntimeWiring();
-		this.runtimeWiringConfigurers.forEach((configurer) -> {
+		this.runtimeWiringConfigurers.forEach(configurer -> {
 			configurer.setTypeDefinitionRegistry(typeRegistry);
 			configurer.configure(builder);
 		});
@@ -210,7 +210,7 @@ final class DefaultSchemaResourceGraphQlSourceBuilder
 		if (!factory.getClass().equals(NoopWiringFactory.class)) {
 			factories.add(factory);
 		}
-		this.runtimeWiringConfigurers.forEach((configurer) -> configurer.configure(builder, factories));
+		this.runtimeWiringConfigurers.forEach(configurer -> configurer.configure(builder, factories));
 		if (!factories.isEmpty()) {
 			builder.wiringFactory(new CombinedWiringFactory(factories));
 		}
@@ -226,7 +226,7 @@ final class DefaultSchemaResourceGraphQlSourceBuilder
 			return;
 		}
 
-		registry.schemaDefinition().get().getOperationTypeDefinitions().forEach((definition) -> {
+		registry.schemaDefinition().get().getOperationTypeDefinitions().forEach(definition -> {
 			String name = StringUtils.capitalize(definition.getName());
 			Map<String, DataFetcher> dataFetcherMap = runtimeWiring.getDataFetchers().remove(name);
 			if (!CollectionUtils.isEmpty(dataFetcherMap)) {
@@ -236,7 +236,7 @@ final class DefaultSchemaResourceGraphQlSourceBuilder
 	}
 
 	private TypeResolver initTypeResolver() {
-		return (this.typeResolver != null) ? this.typeResolver : new ClassNameTypeResolver();
+		return this.typeResolver != null ? this.typeResolver : new ClassNameTypeResolver();
 	}
 
 	@Override

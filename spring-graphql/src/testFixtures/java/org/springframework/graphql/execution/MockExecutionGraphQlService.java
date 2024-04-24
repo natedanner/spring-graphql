@@ -164,8 +164,8 @@ public class MockExecutionGraphQlService implements ExecutionGraphQlService {
 	public void setResponseStream(String document, Stream<Map<String, Object>> dataStream) {
 		ExecutionInput input = ExecutionInput.newExecutionInput().query(document).build();
 		List<DefaultExecutionGraphQlResponse> resultList = dataStream
-				.map((data) -> ExecutionResult.newExecutionResult().data(data).build())
-				.map((result) -> new DefaultExecutionGraphQlResponse(input, result)).toList();
+				.map(data -> ExecutionResult.newExecutionResult().data(data).build())
+				.map(result -> new DefaultExecutionGraphQlResponse(input, result)).toList();
 		this.responses.put(document, new DefaultExecutionGraphQlResponse(input,
 				ExecutionResult.newExecutionResult().data(Flux.fromIterable(resultList)).build()));
 	}

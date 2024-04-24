@@ -91,7 +91,7 @@ public abstract class AbstractGraphQlSourceBuilder<B extends GraphQlSource.Build
 
 	@Override
 	public B configureGraphQl(Consumer<GraphQL.Builder> configurer) {
-		this.graphQlConfigurer = (this.graphQlConfigurer != null) ?
+		this.graphQlConfigurer = this.graphQlConfigurer != null ?
 				this.graphQlConfigurer.andThen(configurer) : configurer;
 		return self();
 	}
@@ -148,7 +148,7 @@ public abstract class AbstractGraphQlSourceBuilder<B extends GraphQlSource.Build
 		visitorsToUse.add(ContextDataFetcherDecorator.createVisitor(this.subscriptionExceptionResolvers));
 
 		new SchemaTraverser().depthFirstFullSchema(visitorsToUse, schema, vars);
-		return schema.transformWithoutTypes((builder) -> builder.codeRegistry(outputCodeRegistry));
+		return schema.transformWithoutTypes(builder -> builder.codeRegistry(outputCodeRegistry));
 	}
 
 	/**

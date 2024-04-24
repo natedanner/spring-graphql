@@ -76,7 +76,7 @@ public final class ScrollSubrange extends Subrange<ScrollPosition> {
 
 		if (!forward) {
 			// Advance back by 1 at least to item before position
-			int advanceCount = ((count != null) ? count : 1);
+			int advanceCount = count != null ? count : 1;
 
 			// Add 1 more to exclude item at reference position
 			advanceCount++;

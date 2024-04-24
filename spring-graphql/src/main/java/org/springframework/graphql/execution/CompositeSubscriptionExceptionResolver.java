@@ -55,9 +55,9 @@ class CompositeSubscriptionExceptionResolver implements SubscriptionExceptionRes
 	@Override
 	public Mono<List<GraphQLError>> resolveException(Throwable exception) {
 		return Flux.fromIterable(this.resolvers)
-				.flatMap((resolver) -> resolver.resolveException(exception))
+				.flatMap(resolver -> resolver.resolveException(exception))
 				.next()
-				.onErrorResume((error) -> Mono.just(handleResolverException(error, exception)))
+				.onErrorResume(error -> Mono.just(handleResolverException(error, exception)))
 				.defaultIfEmpty(createDefaultError());
 	}
 

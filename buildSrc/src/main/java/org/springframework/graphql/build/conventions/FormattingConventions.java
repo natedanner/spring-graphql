@@ -32,7 +32,7 @@ import org.gradle.api.plugins.quality.CheckstylePlugin;
 public class FormattingConventions {
 
 	public void apply(Project project) {
-		project.getPlugins().withType(JavaBasePlugin.class, (java) -> applySpringJavaFormat(project));
+		project.getPlugins().withType(JavaBasePlugin.class, java -> applySpringJavaFormat(project));
 	}
 
 	private void applySpringJavaFormat(Project project) {

@@ -92,7 +92,7 @@ public class ResourceDocumentSource implements DocumentSource {
 	@Override
 	public Mono<String> getDocument(String name) {
 		return Flux.fromIterable(this.locations)
-				.flatMapIterable((location) -> getCandidateResources(name, location))
+				.flatMapIterable(location -> getCandidateResources(name, location))
 				.filter(Resource::exists)
 				.next()
 				.map(this::resourceToString)
@@ -106,7 +106,7 @@ public class ResourceDocumentSource implements DocumentSource {
 
 	private List<Resource> getCandidateResources(String name, Resource location) {
 		return this.extensions.stream()
-				.map((ext) -> {
+				.map(ext -> {
 					try {
 						return location.createRelative(name + ext);
 					}

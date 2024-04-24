@@ -46,7 +46,7 @@ public class DefaultExecutionGraphQlServiceTests {
 				.registerBatchLoader((books, batchLoaderEnvironment) -> Flux.empty());
 
 		GraphQlSource graphQlSource = GraphQlSetup.schemaContent("type Query { greeting: String }")
-				.queryFetcher("greeting", (env) -> "hi")
+				.queryFetcher("greeting", env -> "hi")
 				.toGraphQlSource();
 
 		DefaultExecutionGraphQlService graphQlService = new DefaultExecutionGraphQlService(graphQlSource);

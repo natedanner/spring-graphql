@@ -53,7 +53,7 @@ import org.springframework.web.reactive.socket.adapter.AbstractWebSocketSession;
  */
 public final class TestWebSocketConnection {
 
-	private static Log logger = LogFactory.getLog(TestWebSocketConnection.class);
+	private static final Log logger = LogFactory.getLog(TestWebSocketConnection.class);
 
 	private static final AtomicLong connectionIndex = new AtomicLong();
 
@@ -100,7 +100,7 @@ public final class TestWebSocketConnection {
 	 * Return {@code true} if both client and server sessions are open.
 	 */
 	public boolean isOpen() {
-		return (this.clientSession.isOpen() && this.serverSession.isOpen());
+		return this.clientSession.isOpen() && this.serverSession.isOpen();
 	}
 
 	/**
@@ -144,7 +144,7 @@ public final class TestWebSocketConnection {
 	private Mono<Void> invokeHandler(WebSocketHandler handler, TestWebSocketSession session, boolean isClient) {
 		return handler.handle(session)
 				.then(Mono.defer(() -> session.close(CloseStatus.NORMAL)))
-				.onErrorResume((ex) -> {
+				.onErrorResume(ex -> {
 					logger.error("Unhandled " + (isClient ? "client" : "server") + " error: " + ex.getMessage());
 					return session.close(CloseStatus.PROTOCOL_ERROR).then(Mono.error(ex));
 				});
@@ -228,7 +228,7 @@ public final class TestWebSocketConnection {
 		public Mono<Void> send(Publisher<WebSocketMessage> messages) {
 			return Flux.from(messages)
 					.doOnNext(this::saveMessage)
-					.doOnNext((message) -> {
+					.doOnNext(message -> {
 						Sinks.EmitResult result = this.sendSink.tryEmitNext(message);
 						Assert.state(result.isSuccess(), this + " failed to send: " + message + ", with " + result);
 					})

@@ -76,7 +76,7 @@ public class GraphQlSseHandler extends AbstractGraphQlHttpHandler {
 		if (logger.isDebugEnabled()) {
 			logger.debug("Executing: " + graphQlRequest);
 		}
-		return ServerResponse.sse((sseBuilder) -> this.graphQlHandler.handleRequest(graphQlRequest)
+		return ServerResponse.sse(sseBuilder -> this.graphQlHandler.handleRequest(graphQlRequest)
 				.flatMapMany(this::handleResponse)
 				.subscribe(new SendMessageSubscriber(graphQlRequest.getId(), sseBuilder)));
 	}
@@ -86,7 +86,7 @@ public class GraphQlSseHandler extends AbstractGraphQlHttpHandler {
 	private Publisher<Map<String, Object>> handleResponse(WebGraphQlResponse response) {
 		if (logger.isDebugEnabled()) {
 			logger.debug("Execution result ready"
-					+ (!CollectionUtils.isEmpty(response.getErrors()) ? " with errors: " + response.getErrors() : "")
+					+ (CollectionUtils.isEmpty(response.getErrors()) ? "" : " with errors: " + response.getErrors())
 					+ ".");
 		}
 		if (response.getData() instanceof Publisher) {

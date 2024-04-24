@@ -73,9 +73,9 @@ public class GraphiQlHandler {
 	 * @param request the HTTP server request
 	 */
 	public ServerResponse handleRequest(ServerRequest request) {
-		return (request.param("path").isPresent() ?
+		return request.param("path").isPresent() ?
 				ServerResponse.ok().contentType(MediaType.TEXT_HTML).body(this.htmlResource) :
-				ServerResponse.temporaryRedirect(getRedirectUrl(request)).build());
+				ServerResponse.temporaryRedirect(getRedirectUrl(request)).build();
 	}
 
 	private URI getRedirectUrl(ServerRequest request) {
@@ -93,7 +93,7 @@ public class GraphiQlHandler {
 		String fullPath = request.requestPath().value();
 		String pathWithinApplication = request.requestPath().pathWithinApplication().toString();
 		int pathWithinApplicationIndex = fullPath.indexOf(pathWithinApplication);
-		return (pathWithinApplicationIndex != -1) ? fullPath.substring(0, pathWithinApplicationIndex) + path : path;
+		return pathWithinApplicationIndex != -1 ? fullPath.substring(0, pathWithinApplicationIndex) + path : path;
 	}
 
 }

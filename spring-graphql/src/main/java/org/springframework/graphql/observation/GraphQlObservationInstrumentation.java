@@ -114,7 +114,7 @@ public class GraphQlObservationInstrumentation extends SimplePerformantInstrumen
 				@Override
 				public void onCompleted(ExecutionResult result, Throwable exc) {
 					observationContext.setExecutionResult(result);
-					result.getErrors().forEach((graphQLError) -> {
+					result.getErrors().forEach(graphQLError -> {
 						Observation.Event event = Observation.Event.of(graphQLError.getErrorType().toString(), graphQLError.getMessage());
 						requestObservation.event(event);
 					});
@@ -139,7 +139,7 @@ public class GraphQlObservationInstrumentation extends SimplePerformantInstrumen
 			InstrumentationFieldFetchParameters parameters, InstrumentationState state) {
 		if (!parameters.isTrivialDataFetcher()
 				&& state == RequestObservationInstrumentationState.INSTANCE) {
-			return (environment) -> {
+			return environment -> {
 				DataFetcherObservationContext observationContext = new DataFetcherObservationContext(environment);
 				Observation dataFetcherObservation = GraphQlObservationDocumentation.DATA_FETCHER.observation(this.dataFetcherObservationConvention,
 						DEFAULT_DATA_FETCHER_CONVENTION, () -> observationContext, this.observationRegistry);

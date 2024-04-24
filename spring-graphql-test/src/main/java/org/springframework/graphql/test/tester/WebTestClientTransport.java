@@ -38,7 +38,7 @@ import org.springframework.util.Assert;
 final class WebTestClientTransport implements GraphQlTransport {
 
 	private static final ParameterizedTypeReference<Map<String, Object>> MAP_TYPE =
-			new ParameterizedTypeReference<Map<String, Object>>() { };
+			new ParameterizedTypeReference<>() { };
 
 
 	private final WebTestClient webTestClient;
@@ -64,7 +64,7 @@ final class WebTestClientTransport implements GraphQlTransport {
 				.returnResult()
 				.getResponseBody();
 
-		responseMap = (responseMap != null) ? responseMap : Collections.emptyMap();
+		responseMap = responseMap != null ? responseMap : Collections.emptyMap();
 		GraphQlResponse response = GraphQlTransport.createResponse(responseMap);
 		return Mono.just(response);
 	}

@@ -75,7 +75,7 @@ final class EntityArgumentMethodArgumentResolver extends ArgumentMethodArgumentR
 	}
 
 	private static String dePluralize(String name) {
-		return (name.endsWith("List")) ? name.substring(0, name.length() - 4) : name;
+		return name.endsWith("List") ? name.substring(0, name.length() - 4) : name;
 	}
 
 
